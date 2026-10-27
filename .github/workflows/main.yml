@@ -1,0 +1,53 @@
+
+name: BusinessFinderAI Free Dry Run
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check runner
+        run: |
+          echo "BusinessFinderAI dry run started"
+          date -u
+          df -h .
+          free -h
+
+      - name: Download free OSM data
+        run: |
+          python - <<'PY'
+          import os
+          import urllib.request
+
+          url = "https://download.geofabrik.de/asia/india-western-latest.osm.pbf"
+          path = "/tmp/india-western-latest.osm.pbf"
+
+          print("Downloading OpenStreetMap data...")
+          request = urllib.request.Request(
+              url, headers={"User-Agent": "BusinessFinderAI/1.0"}
+          )
+
+          with urllib.request.urlopen(request, timeout=120) as response:
+              total = int(response.headers.get("Content-Length", 0))
+              downloaded = 0
+
+              with open(path, "wb") as file:
+                  while True:
+                      chunk = response.read(1024 * 1024)
+                      if not chunk:
+                          break
+                      file.write(chunk)
+                      downloaded += len(chunk)
+
+          print(f"Downloaded: {downloaded / (1024 * 1024):.1f} MB")
+          print("Download completed successfully.")
+          os.remove(path)
+          print("Temporary data file deleted.")
+          PY
