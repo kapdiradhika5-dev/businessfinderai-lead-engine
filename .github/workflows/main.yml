@@ -209,3 +209,214 @@ jobs:
       - name: Clean up downloaded map
         if: always()
         run: rm -f /tmp/india.osm.pbf
+
+name: BusinessFinderAI Daily 30 Leads
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 3 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: businessfinderai-daily-leads
+  cancel-in-progress: false
+
+jobs:
+  export-leads:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install OSM reader
+        run: python -m pip install --disable-pip-version-check osmium
+
+      - name: Download India OSM data
+        run: |
+          python - <<'PY'
+          import urllib.request
+
+          url = "https://download.geofabrik.de/asia/india-latest.osm.pbf"
+          request = urllib.request.Request(
+              url, headers={"User-Agent": "BusinessFinderAI/1.0"}
+          )
+
+          with urllib.request.urlopen(request, timeout=240) as response:
+              with open("/tmp/india.osm.pbf", "wb") as output:
+                  while True:
+                      chunk = response.read(1024 * 1024)
+                      if not chunk:
+                          break
+                      output.write(chunk)
+
+          print("India OSM download completed.")
+          PY
+
+      - name: Export up to 30 new businesses
+        run: |
+          python - <<'PY'
+          import csv
+          import os
+          import osmium
+
+          INPUT = "/tmp/india.osm.pbf"
+          OUTPUT = "business_leads.csv"
+          HISTORY = "seen_businesses.txt"
+          LIMIT = 30
+
+          AMENITIES = {
+              "restaurant", "cafe", "fast_food", "bar", "pub",
+              "bank", "pharmacy", "clinic", "hospital", "dentist",
+              "veterinary", "fuel", "car_wash", "car_repair",
+              "beauty_salon", "marketplace", "post_office",
+              "coworking_space", "money_transfer"
+          }
+          CATEGORY_KEYS = (
+              "shop", "office", "craft", "tourism", "healthcare"
+          )
+          FIELDS = [
+              "osm_type", "osm_id", "name", "category",
+              "subcategory", "address", "city", "state",
+              "postcode", "phone", "email", "website",
+              "latitude", "longitude"
+          ]
+
+          if os.path.exists(HISTORY):
+              with open(HISTORY, encoding="utf-8") as f:
+                  seen = set(line.strip() for line in f if line.strip())
+          else:
+              seen = set()
+
+          original_count = len(seen)
+          new_ids = set()
+          rows = []
+
+          def tag(tags, *keys):
+              for key in keys:
+                  value = tags.get(key)
+                  if value:
+                      return value
+              return ""
+
+          class Exporter(osmium.SimpleHandler):
+              def process(self, obj, osm_type, lat="", lon=""):
+                  if len(rows) >= LIMIT:
+                      return
+
+                  tags = obj.tags
+                  category = ""
+                  subcategory = ""
+
+                  for key in CATEGORY_KEYS:
+                      if tags.get(key):
+                          category = key
+                          subcategory = tags.get(key)
+                          break
+
+                  if not category and tags.get("amenity") in AMENITIES:
+                      category = "amenity"
+                      subcategory = tags.get("amenity")
+
+                  if not category:
+                      return
+
+                  name = tag(tags, "name", "name:en")
+                  if not name:
+                      return
+
+                  key = f"{osm_type}/{obj.id}"
+                  if key in seen or key in new_ids:
+                      return
+
+                  address = ", ".join(
+                      value for value in [
+                          tag(tags, "addr:housenumber"),
+                          tag(tags, "addr:street"),
+                          tag(tags, "addr:suburb")
+                      ] if value
+                  )
+
+                  rows.append({
+                      "osm_type": osm_type,
+                      "osm_id": obj.id,
+                      "name": name,
+                      "category": category,
+                      "subcategory": subcategory,
+                      "address": address,
+                      "city": tag(
+                          tags, "addr:city", "addr:town", "addr:village"
+                      ),
+                      "state": tag(tags, "addr:state"),
+                      "postcode": tag(tags, "addr:postcode"),
+                      "phone": tag(tags, "phone", "contact:phone", "mobile"),
+                      "email": tag(tags, "email", "contact:email"),
+                      "website": tag(
+                          tags, "website", "contact:website", "url"
+                      ),
+                      "latitude": lat,
+                      "longitude": lon
+                  })
+                  new_ids.add(key)
+
+              def node(self, obj):
+                  if obj.location.valid():
+                      self.process(
+                          obj, "node", obj.location.lat, obj.location.lon
+                      )
+                  else:
+                      self.process(obj, "node")
+
+              def way(self, obj):
+                  self.process(obj, "way")
+
+              def relation(self, obj):
+                  self.process(obj, "relation")
+
+          print("Finding new named businesses...")
+          Exporter().apply_file(INPUT, locations=True)
+
+          with open(OUTPUT, "w", newline="", encoding="utf-8-sig") as f:
+              writer = csv.DictWriter(f, fieldnames=FIELDS)
+              writer.writeheader()
+              writer.writerows(rows)
+
+          seen.update(new_ids)
+          with open(HISTORY, "w", encoding="utf-8") as f:
+              for key in sorted(seen):
+                  f.write(key + "\n")
+
+          print(f"New businesses exported: {len(rows)}")
+          print(f"Previously recorded OSM IDs: {original_count}")
+          print("Note: These are map records, not verified leads.")
+          PY
+
+      - name: Save duplicate history
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add seen_businesses.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "Update BusinessFinderAI lead history"
+            git push
+          else
+            echo "No history changes to save."
+          fi
+
+      - name: Upload daily CSV
+        uses: actions/upload-artifact@v4
+        with:
+          name: businessfinderai-leads-${{ github.run_number }}
+          path: business_leads.csv
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Clean up downloaded map
+        if: always()
+        run: rm -f /tmp/india.osm.pbf
