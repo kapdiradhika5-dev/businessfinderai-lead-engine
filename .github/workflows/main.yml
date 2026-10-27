@@ -1,5 +1,5 @@
 
-name: BusinessFinderAI India Count Test
+name: BusinessFinderAI India Lead Export
 
 on:
   workflow_dispatch:
@@ -8,54 +8,47 @@ permissions:
   contents: read
 
 jobs:
-  india-count:
+  export-leads:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
     steps:
-      - name: Check runner
-        run: |
-          echo "BusinessFinderAI India count test started"
-          date -u
-          df -h .
-
       - name: Install OSM reader
         run: python -m pip install --disable-pip-version-check osmium
 
       - name: Download India OSM data
         run: |
           python - <<'PY'
-          import os
           import urllib.request
 
           url = "https://download.geofabrik.de/asia/india-latest.osm.pbf"
           path = "/tmp/india-latest.osm.pbf"
 
-          print("Downloading India OpenStreetMap data...")
+          print("Downloading India map data...")
           request = urllib.request.Request(
-              url, headers={"User-Agent": "BusinessFinderAI/1.0"}
+              url,
+              headers={"User-Agent": "BusinessFinderAI/1.0"}
           )
 
-          downloaded = 0
           with urllib.request.urlopen(request, timeout=180) as response:
-              with open(path, "wb") as file:
+              with open(path, "wb") as output:
                   while True:
                       chunk = response.read(1024 * 1024)
                       if not chunk:
                           break
-                      file.write(chunk)
-                      downloaded += len(chunk)
+                      output.write(chunk)
 
-          print(f"Download completed: {downloaded / (1024**3):.2f} GB")
+          print("Download completed.")
           PY
 
-      - name: Count business records without saving leads
+      - name: Export business records to CSV
         run: |
           python - <<'PY'
+          import csv
           import osmium
-          from collections import Counter
 
-          FILE = "/tmp/india-latest.osm.pbf"
+          INPUT = "/tmp/india-latest.osm.pbf"
+          OUTPUT = "business_leads.csv"
 
           AMENITIES = {
               "restaurant", "cafe", "fast_food", "bar", "pub",
@@ -65,71 +58,145 @@ jobs:
               "coworking_space", "money_transfer"
           }
 
-          CATEGORY_KEYS = ("shop", "office", "craft", "tourism", "healthcare")
-          ONLINE_KEYS = {
+          CATEGORY_KEYS = (
+              "shop", "office", "craft", "tourism", "healthcare"
+          )
+
+          ONLINE_KEYS = (
               "website", "contact:website", "url",
+              "phone", "contact:phone", "email", "contact:email",
               "facebook", "contact:facebook",
               "instagram", "contact:instagram",
-              "linkedin", "contact:linkedin",
-              "twitter", "contact:twitter"
-          }
+              "linkedin", "contact:linkedin"
+          )
 
-          class BusinessCounter(osmium.SimpleHandler):
+          FIELDS = [
+              "osm_type", "osm_id", "name", "category",
+              "subcategory", "address", "city", "state",
+              "postcode", "phone", "email", "website",
+              "latitude", "longitude", "has_online_contact"
+          ]
+
+          def first_tag(tags, *keys):
+              for key in keys:
+                  value = tags.get(key)
+                  if value:
+                      return value
+              return ""
+
+          class BusinessExporter(osmium.SimpleHandler):
               def __init__(self):
                   super().__init__()
-                  self.total = 0
-                  self.named = 0
-                  self.no_online_tag = 0
-                  self.categories = Counter()
+                  self.file = open(
+                      OUTPUT, "w", newline="", encoding="utf-8-sig"
+                  )
+                  self.writer = csv.DictWriter(
+                      self.file, fieldnames=FIELDS
+                  )
+                  self.writer.writeheader()
+                  self.count = 0
 
-              def check(self, tags):
-                  category = None
+              def process(self, obj, osm_type, latitude="", longitude=""):
+                  tags = obj.tags
+                  category = ""
+                  subcategory = ""
 
                   for key in CATEGORY_KEYS:
                       if tags.get(key):
                           category = key
+                          subcategory = tags.get(key)
                           break
 
-                  if category is None and tags.get("amenity") in AMENITIES:
+                  if not category and tags.get("amenity") in AMENITIES:
                       category = "amenity"
+                      subcategory = tags.get("amenity")
 
-                  if category is None:
+                  if not category:
                       return
 
-                  self.total += 1
+                  name = first_tag(tags, "name", "name:en")
+                  if not name:
+                      return
 
-                  if tags.get("name"):
-                      self.named += 1
+                  address_parts = [
+                      first_tag(tags, "addr:housenumber"),
+                      first_tag(tags, "addr:street"),
+                      first_tag(tags, "addr:suburb"),
+                  ]
+                  address = ", ".join(part for part in address_parts if part)
 
-                  if not any(tags.get(key) for key in ONLINE_KEYS):
-                      self.no_online_tag += 1
+                  phone = first_tag(
+                      tags, "phone", "contact:phone", "mobile"
+                  )
+                  email = first_tag(
+                      tags, "email", "contact:email"
+                  )
+                  website = first_tag(
+                      tags, "website", "contact:website", "url"
+                  )
 
-                  self.categories[category] += 1
+                  online_contact = any(
+                      tags.get(key) for key in ONLINE_KEYS
+                  )
+
+                  self.writer.writerow({
+                      "osm_type": osm_type,
+                      "osm_id": obj.id,
+                      "name": name,
+                      "category": category,
+                      "subcategory": subcategory,
+                      "address": address,
+                      "city": first_tag(
+                          tags, "addr:city", "addr:town", "addr:village"
+                      ),
+                      "state": first_tag(tags, "addr:state"),
+                      "postcode": first_tag(tags, "addr:postcode"),
+                      "phone": phone,
+                      "email": email,
+                      "website": website,
+                      "latitude": latitude,
+                      "longitude": longitude,
+                      "has_online_contact": "Yes" if online_contact else "No"
+                  })
+                  self.count += 1
 
               def node(self, obj):
-                  self.check(obj.tags)
+                  if obj.location.valid():
+                      lat = obj.location.lat
+                      lon = obj.location.lon
+                  else:
+                      lat, lon = "", ""
+                  self.process(obj, "node", lat, lon)
 
               def way(self, obj):
-                  self.check(obj.tags)
+                  self.process(obj, "way")
 
               def relation(self, obj):
-                  self.check(obj.tags)
+                  self.process(obj, "relation")
 
-          counter = BusinessCounter()
-          print("Reading India map data; please wait...")
-          counter.apply_file(FILE)
+              def close(self):
+                  self.file.close()
 
-          print("\nIndia OSM business-record counts")
-          print(f"Matching records: {counter.total}")
-          print(f"Records with a name: {counter.named}")
-          print(f"Records without website/social tags: {counter.no_online_tag}")
-          print("Category counts:")
-          for category, count in sorted(counter.categories.items()):
-              print(f"  {category}: {count}")
+          exporter = BusinessExporter()
+          print("Extracting named business records...")
+          try:
+              exporter.apply_file(INPUT, locations=True)
+          finally:
+              exporter.close()
 
-          print("\nThese are map records, not verified unique businesses.")
-          print("No business names or addresses were printed or saved.")
+          print(f"CSV created: {OUTPUT}")
+          print(f"Named records exported: {exporter.count}")
+          print("Some records may refer to the same real-world business.")
+          print("Missing contact details are left blank.")
           PY
+
+      - name: Upload CSV artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: businessfinderai-leads
+          path: business_leads.csv
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Delete downloaded map data
         if: always()
