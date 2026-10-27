@@ -1,5 +1,5 @@
 
-name: BusinessFinderAI Free Dry Run
+name: BusinessFinderAI India Count Test
 
 on:
   workflow_dispatch:
@@ -8,36 +8,36 @@ permissions:
   contents: read
 
 jobs:
-  dry-run:
+  india-count:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
 
     steps:
       - name: Check runner
         run: |
-          echo "BusinessFinderAI dry run started"
+          echo "BusinessFinderAI India count test started"
           date -u
           df -h .
-          free -h
 
-      - name: Download free OSM data
+      - name: Install OSM reader
+        run: python -m pip install --disable-pip-version-check osmium
+
+      - name: Download India OSM data
         run: |
           python - <<'PY'
           import os
           import urllib.request
 
-          url = "https://download.geofabrik.de/asia/india/western-zone-latest.osm.pbf"
-          path = "/tmp/india-western-latest.osm.pbf"
+          url = "https://download.geofabrik.de/asia/india-latest.osm.pbf"
+          path = "/tmp/india-latest.osm.pbf"
 
-          print("Downloading OpenStreetMap data...")
+          print("Downloading India OpenStreetMap data...")
           request = urllib.request.Request(
               url, headers={"User-Agent": "BusinessFinderAI/1.0"}
           )
 
-          with urllib.request.urlopen(request, timeout=120) as response:
-              total = int(response.headers.get("Content-Length", 0))
-              downloaded = 0
-
+          downloaded = 0
+          with urllib.request.urlopen(request, timeout=180) as response:
               with open(path, "wb") as file:
                   while True:
                       chunk = response.read(1024 * 1024)
@@ -46,8 +46,91 @@ jobs:
                       file.write(chunk)
                       downloaded += len(chunk)
 
-          print(f"Downloaded: {downloaded / (1024 * 1024):.1f} MB")
-          print("Download completed successfully.")
-          os.remove(path)
-          print("Temporary data file deleted.")
+          print(f"Download completed: {downloaded / (1024**3):.2f} GB")
           PY
+
+      - name: Count business records without saving leads
+        run: |
+          python - <<'PY'
+          import osmium
+          from collections import Counter
+
+          FILE = "/tmp/india-latest.osm.pbf"
+
+          AMENITIES = {
+              "restaurant", "cafe", "fast_food", "bar", "pub",
+              "bank", "pharmacy", "clinic", "hospital", "dentist",
+              "veterinary", "fuel", "car_wash", "car_repair",
+              "beauty_salon", "marketplace", "post_office",
+              "coworking_space", "money_transfer"
+          }
+
+          CATEGORY_KEYS = ("shop", "office", "craft", "tourism", "healthcare")
+          ONLINE_KEYS = {
+              "website", "contact:website", "url",
+              "facebook", "contact:facebook",
+              "instagram", "contact:instagram",
+              "linkedin", "contact:linkedin",
+              "twitter", "contact:twitter"
+          }
+
+          class BusinessCounter(osmium.SimpleHandler):
+              def __init__(self):
+                  super().__init__()
+                  self.total = 0
+                  self.named = 0
+                  self.no_online_tag = 0
+                  self.categories = Counter()
+
+              def check(self, tags):
+                  category = None
+
+                  for key in CATEGORY_KEYS:
+                      if tags.get(key):
+                          category = key
+                          break
+
+                  if category is None and tags.get("amenity") in AMENITIES:
+                      category = "amenity"
+
+                  if category is None:
+                      return
+
+                  self.total += 1
+
+                  if tags.get("name"):
+                      self.named += 1
+
+                  if not any(tags.get(key) for key in ONLINE_KEYS):
+                      self.no_online_tag += 1
+
+                  self.categories[category] += 1
+
+              def node(self, obj):
+                  self.check(obj.tags)
+
+              def way(self, obj):
+                  self.check(obj.tags)
+
+              def relation(self, obj):
+                  self.check(obj.tags)
+
+          counter = BusinessCounter()
+          print("Reading India map data; please wait...")
+          counter.apply_file(FILE)
+
+          print("\nIndia OSM business-record counts")
+          print(f"Matching records: {counter.total}")
+          print(f"Records with a name: {counter.named}")
+          print(f"Records without website/social tags: {counter.no_online_tag}")
+          print("Category counts:")
+          for category, count in sorted(counter.categories.items()):
+              print(f"  {category}: {count}")
+
+          print("\nThese are map records, not verified unique businesses.")
+          print("No business names or addresses were printed or saved.")
+          PY
+
+      - name: Delete downloaded map data
+        if: always()
+        run: rm -f /tmp/india-latest.osm.pbf
