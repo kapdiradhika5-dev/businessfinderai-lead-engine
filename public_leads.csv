@@ -1,31 +1,31 @@
 ﻿osm_type,osm_id,name,category,subcategory,address,city,state,postcode,phone,email,website,latitude,longitude
-node,243714283,Tamil Nadu Hotel,tourism,hotel,,,,,,,,12.5279251,78.2363232
-node,243970258,Dreamland Fun Park,tourism,theme_park,,,,,,,,30.8322963,75.9836017
-node,243970408,Jhajj,shop,dairy,,,,,,,,30.8358801,75.9703788
-node,245606842,CINDURA'S Beauty Parlour,shop,beauty,,,,,,,,12.444432,80.1089115
-node,245623398,Gauribidanuru,tourism,attraction,,,,,,,,13.6114523,77.5167805
-node,245634299,Shivaiah Statue,tourism,artwork,,,,,,,,16.0498604,79.7405572
-node,245638783,Nampalli,amenity,hospital,,,,,,,,16.8862748,78.9608692
-node,245653876,Copper Chimney,amenity,restaurant,,,,,,,,18.927571,72.8325747
-node,245654461,"राजभवन, मुंबई",office,government,,,,400035,,,,18.9410646,72.7939174
-node,245654643,Imperial Palace,tourism,hotel,,,,,,,,18.9447467,72.834718
-node,245654709,Sharada,tourism,hotel,,,,,,,,18.9461969,72.8274147
-node,245655916,Cecil,tourism,hotel,,,,,,,,18.958401,72.811296
-node,245659178,Sunbeam Geeta,tourism,hotel,,,,,,,,18.9978253,72.818454
-node,245659835,Vivako,tourism,hotel,,,,,,,,19.0059,72.8186
-node,245660676,Rajendra Clinic,healthcare,clinic,,,Maharastra,400031,,,,19.016482,72.8533452
-node,245664375,Jollyland,tourism,hotel,,,,,,,,19.0491708,72.9051478
-node,245664752,Ghatla,tourism,hotel,,,,,,,,19.0517387,72.9103117
-node,245666128,Jewel of Chembur,tourism,hotel,,,,,,,,19.0616667,72.8997266
-node,245666538,Maruthi Mahal,tourism,hotel,,,,,,,,19.0636369,72.8940601
-node,245666563,Anita Mahal,tourism,hotel,,,,,,,,19.0693839,72.8836606
-node,245668354,Regency,tourism,hotel,,,,,,,,19.0790449,72.8462916
-node,245668712,Classic,tourism,hotel,,,,,,,,19.0835527,72.8384747
-node,245669161,Atlantic,tourism,hotel,,,,,,,,19.0870126,72.8274729
-node,245669308,Ajanta,tourism,hotel,,,,,,,,19.0886,72.8275
-node,245669365,Royal Garden,tourism,hotel,,,,,,,,19.0894,72.8276
-node,245670368,Ambassador,tourism,hotel,,,,,,,,19.103681,72.8754749
-node,245671372,Leela Kempinski,tourism,hotel,,,,,,,,19.1065748,72.8761199
-node,245671375,Kumaria Presidency,tourism,hotel,,,,,,,,19.1065999,72.8769001
-node,245671517,Samraj,tourism,hotel,,,,,,,,19.1097262,72.8594577
-node,245671547,Sun n Sheel,tourism,hotel,,,,,,,,19.1111949,72.8719322
+node,245672210,Tirupati,tourism,hotel,,,,,,,,19.1136052,72.8804798
+node,245672458,Imperial Palace,tourism,hotel,,,,,,,,19.1182153,72.8506224
+node,245672493,Highway Inn,tourism,hotel,,,,,,,,19.1175319,72.8508646
+node,245672530,Tunga International,tourism,hotel,,,,,,,,19.1154,72.872
+node,245673845,Babul,tourism,hotel,,,,,,,,19.1217301,72.8318524
+node,245675841,Dolphin View,tourism,hotel,,,,,,,,19.1437101,72.7893756
+node,245676011,Manisha Cottage,tourism,hotel,,,,,,,,19.1458595,72.7895646
+node,245677487,Blue Ballerina,tourism,hotel,,,,,,,,19.1622,72.785
+node,245677504,Jay Prakash,tourism,hotel,,,,,,,,19.1623,72.8513
+node,245678667,The Resort,tourism,hotel,,,,,,,https://www.theresortmumbai.com/,19.1743671,72.7963333
+node,245678767,Anil Thakur Guest House,tourism,hotel,,,,,,,,19.1760671,72.7966333
+node,245681528,Rohan,tourism,hotel,,,,,,,,19.2221778,72.8522858
+node,245708582,Amarkantak,tourism,attraction,,,,,,,,22.670465,81.7588417
+node,245715669,Shamlaji,office,political_party,,,,,,,,23.7234184,73.4036304
+node,245730598,Chitrakoot,tourism,attraction,,,,,,,,25.1743883,80.8691307
+node,245731299,Sohra (Cherrapunji),tourism,attraction,,,,,,,,25.2777336,91.7292416
+node,245735780,Shillong,tourism,attraction,,,,,,,,25.5759931,91.8827872
+node,245748968,Deoria,shop,video_games,,,,,,,,26.4998975,83.7829787
+node,245769586,Malout,amenity,restaurant,"134, sky mall",malout,,152107,+91 78440 81081,,https://www.onebite.co.in,30.1902559,74.5001207
+node,246725690,Petrol Pump,amenity,fuel,,,,,,,,30.8598353,75.8590925
+node,246912870,Satpal Di Hatti,shop,convenience,,,,,,,,30.8911208,75.8391201
+node,246914014,Satpal Di Hatti,shop,convenience,,,,,,,,30.8924466,75.8434116
+node,247177822,SREC Health Center,amenity,hospital,,,,,,,,11.1005451,76.9637445
+node,247177830,SREC Ladies Hostel,tourism,hostel,,,,,,,,11.100144,76.9645328
+node,247177849,SREC Boys Hostel,tourism,hostel,,,,,,,,11.1010721,76.9683793
+node,247177879,SREC Canteen,amenity,restaurant,,,,,,,,11.1017133,76.9664263
+node,247229204,Reliance,amenity,fuel,,,,,,,,11.2575595,77.5511245
+node,247908008,B6 Inn,amenity,restaurant,,,,,,,,8.5563511,76.8761007
+node,247964328,IIMB post office - Bilekahalli,amenity,post_office,,,,,,,,12.8980535,77.6008383
+node,247964964,State Bank of India,amenity,bank,,,,,,,,12.8952509,77.6019087
