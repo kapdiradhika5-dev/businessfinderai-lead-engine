@@ -67,9 +67,11 @@ jobs:
               "beauty_salon", "marketplace", "post_office",
               "coworking_space", "money_transfer"
           }
+
           CATEGORY_KEYS = (
               "shop", "office", "craft", "tourism", "healthcare"
           )
+
           FIELDS = [
               "osm_type", "osm_id", "name", "category",
               "subcategory", "address", "city", "state",
@@ -79,7 +81,9 @@ jobs:
 
           if os.path.exists(HISTORY):
               with open(HISTORY, encoding="utf-8") as f:
-                  seen = set(line.strip() for line in f if line.strip())
+                  seen = set(
+                      line.strip() for line in f if line.strip()
+                  )
           else:
               seen = set()
 
@@ -144,7 +148,9 @@ jobs:
                       ),
                       "state": tag(tags, "addr:state"),
                       "postcode": tag(tags, "addr:postcode"),
-                      "phone": tag(tags, "phone", "contact:phone", "mobile"),
+                      "phone": tag(
+                          tags, "phone", "contact:phone", "mobile"
+                      ),
                       "email": tag(tags, "email", "contact:email"),
                       "website": tag(
                           tags, "website", "contact:website", "url"
@@ -152,12 +158,14 @@ jobs:
                       "latitude": lat,
                       "longitude": lon
                   })
+
                   new_ids.add(key)
 
               def node(self, obj):
                   if obj.location.valid():
                       self.process(
-                          obj, "node", obj.location.lat, obj.location.lon
+                          obj, "node",
+                          obj.location.lat, obj.location.lon
                       )
                   else:
                       self.process(obj, "node")
@@ -177,6 +185,7 @@ jobs:
               writer.writerows(rows)
 
           seen.update(new_ids)
+
           with open(HISTORY, "w", encoding="utf-8") as f:
               for key in sorted(seen):
                   f.write(key + "\n")
@@ -186,16 +195,21 @@ jobs:
           print("Note: These are map records, not verified leads.")
           PY
 
-      - name: Save duplicate history
+      - name: Prepare dashboard CSV
+        run: cp business_leads.csv public_leads.csv
+
+      - name: Save duplicate history and dashboard data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add seen_businesses.txt
+
+          git add seen_businesses.txt public_leads.csv
+
           if ! git diff --cached --quiet; then
-            git commit -m "Update BusinessFinderAI lead history"
+            git commit -m "Update BusinessFinderAI daily leads"
             git push
           else
-            echo "No history changes to save."
+            echo "No changes to save."
           fi
 
       - name: Upload daily CSV
