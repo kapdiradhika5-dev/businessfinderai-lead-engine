@@ -1,31 +1,31 @@
 ﻿osm_type,osm_id,name,category,subcategory,address,city,state,postcode,phone,email,website,latitude,longitude
-node,245672210,Tirupati,tourism,hotel,,,,,,,,19.1136052,72.8804798
-node,245672458,Imperial Palace,tourism,hotel,,,,,,,,19.1182153,72.8506224
-node,245672493,Highway Inn,tourism,hotel,,,,,,,,19.1175319,72.8508646
-node,245672530,Tunga International,tourism,hotel,,,,,,,,19.1154,72.872
-node,245673845,Babul,tourism,hotel,,,,,,,,19.1217301,72.8318524
-node,245675841,Dolphin View,tourism,hotel,,,,,,,,19.1437101,72.7893756
-node,245676011,Manisha Cottage,tourism,hotel,,,,,,,,19.1458595,72.7895646
-node,245677487,Blue Ballerina,tourism,hotel,,,,,,,,19.1622,72.785
-node,245677504,Jay Prakash,tourism,hotel,,,,,,,,19.1623,72.8513
-node,245678667,The Resort,tourism,hotel,,,,,,,https://www.theresortmumbai.com/,19.1743671,72.7963333
-node,245678767,Anil Thakur Guest House,tourism,hotel,,,,,,,,19.1760671,72.7966333
-node,245681528,Rohan,tourism,hotel,,,,,,,,19.2221778,72.8522858
-node,245708582,Amarkantak,tourism,attraction,,,,,,,,22.670465,81.7588417
-node,245715669,Shamlaji,office,political_party,,,,,,,,23.7234184,73.4036304
-node,245730598,Chitrakoot,tourism,attraction,,,,,,,,25.1743883,80.8691307
-node,245731299,Sohra (Cherrapunji),tourism,attraction,,,,,,,,25.2777336,91.7292416
-node,245735780,Shillong,tourism,attraction,,,,,,,,25.5759931,91.8827872
-node,245748968,Deoria,shop,video_games,,,,,,,,26.4998975,83.7829787
-node,245769586,Malout,amenity,restaurant,"134, sky mall",malout,,152107,+91 78440 81081,,https://www.onebite.co.in,30.1902559,74.5001207
-node,246725690,Petrol Pump,amenity,fuel,,,,,,,,30.8598353,75.8590925
-node,246912870,Satpal Di Hatti,shop,convenience,,,,,,,,30.8911208,75.8391201
-node,246914014,Satpal Di Hatti,shop,convenience,,,,,,,,30.8924466,75.8434116
-node,247177822,SREC Health Center,amenity,hospital,,,,,,,,11.1005451,76.9637445
-node,247177830,SREC Ladies Hostel,tourism,hostel,,,,,,,,11.100144,76.9645328
-node,247177849,SREC Boys Hostel,tourism,hostel,,,,,,,,11.1010721,76.9683793
-node,247177879,SREC Canteen,amenity,restaurant,,,,,,,,11.1017133,76.9664263
-node,247229204,Reliance,amenity,fuel,,,,,,,,11.2575595,77.5511245
-node,247908008,B6 Inn,amenity,restaurant,,,,,,,,8.5563511,76.8761007
-node,247964328,IIMB post office - Bilekahalli,amenity,post_office,,,,,,,,12.8980535,77.6008383
-node,247964964,State Bank of India,amenity,bank,,,,,,,,12.8952509,77.6019087
+node,247973288,Snack Corner,amenity,restaurant,Bannerghatta Road,,,,,,,12.8984603,77.6010688
+node,247974102,Athicas Canteen,amenity,fast_food,,,,,,,,12.894213,77.6025681
+node,247974238,Chai-Unchai,amenity,cafe,,,,,,,,12.894434,77.6024579
+node,248051763,Heritage Lawn,tourism,hotel,,,,,,,,29.6646953,77.0030532
+node,248058559,Sandali Darwaza,tourism,hotel,,,,,,,,30.8547759,76.0519977
+node,248059723,Verka Milk Booth,amenity,pub,,,,,,,,30.8491906,76.1064401
+node,248062018,State Bank of India,amenity,bank,,,,,,,,30.8678384,75.8594668
+node,248343706,HP,amenity,fuel,,,,,,,,13.0368733,80.2555597
+node,248343893,IOC,amenity,fuel,,,,,,,,13.037841,80.2562967
+node,248344281,BP,amenity,fuel,,,,,,,,13.0378885,80.2569506
+node,248420920,Kalaignar Karunanidhi Nagar,healthcare,hospital,,,,600078,,,,13.0386493,80.2052158
+node,248517712,Bikaner Misthan Bhandhar,amenity,cafe,,,,,,,,30.8606322,75.8592181
+node,248559397,Koyambedu,amenity,clinic,,,,,,,,13.0720236,80.1980375
+node,248560797,Kasimedu,healthcare,hospital,,,,,,,,13.122775,80.2960584
+node,248614815,Rajarajeshwari Arch,tourism,attraction,,,,,,,,12.9359565,77.5183096
+node,248643757,Alwarpet,amenity,post_office,,,,,,,,13.039407,80.2573785
+node,248852574,Cafe Coffee Day,amenity,cafe,,,,,,,,28.533492,77.1518947
+node,248852583,"ICICI, SBI, Citibank,",amenity,bank,,,,,,,,28.5336472,77.152001
+node,249054695,Indian Oil,amenity,fuel,,,,,,,,28.4892384,77.0909884
+node,249132373,"Paras Hospital, Gurgaon",healthcare,hospital,,,Haryana,122002,,,,28.4509689,77.0875533
+node,249132375,HDFC Bank,amenity,bank,,,,,,,,28.4400152,77.102391
+node,249221479,South City - I Gate,tourism,attraction,,,,,,,,28.4623384,77.0658862
+node,249965733,Honeymoon Boat House,tourism,attraction,,,,,,,,11.4041834,76.6803739
+node,251772796,HP,amenity,fuel,,,,,,,,8.5110238,76.9627206
+node,251772797,Kotak Mahindra Bank,amenity,bank,,,,,,,,8.5101775,76.962686
+node,251772799,Buraq,amenity,restaurant,,,,,,,,8.511711,76.9636564
+node,251772800,Bharat Petrol,amenity,fuel,,,,,,,,8.5073673,76.9621375
+node,251772801,South Indian Bank,amenity,bank,,,,,,,,8.5075808,76.9621937
+node,252136765,Indian Coffee House,amenity,restaurant,,,,,,,,8.5049265,76.9535723
+node,252137258,Guest House,amenity,restaurant,,,,,,,,8.5587565,76.8809894
