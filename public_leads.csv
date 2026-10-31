@@ -1,31 +1,31 @@
 ﻿osm_type,osm_id,name,category,subcategory,address,city,state,postcode,phone,email,website,latitude,longitude
-node,252417084,Nava Yatra,shop,bakery,,,,,,,,8.5265181,77.0364515
-node,253949506,sri gavuri nivas,tourism,hotel,,,,,,,,8.5231268,76.9297678
-node,257532623,The Great Kabab Factory,amenity,restaurant,,,,,,,,12.9946821,80.1874068
-node,257532624,Bharat Petroleum,amenity,fuel,,,,,,,,12.9943244,80.1870765
-node,257899674,Chola Sheraton,tourism,hotel,,,,,,,,13.0453871,80.2573123
-node,258978416,Amrit Hospital,healthcare,hospital,,,Tamil Nadu,600079,,,http://www.amrithospital.com/,13.0922007,80.2792912
-node,258978417,Vikram Hospital,healthcare,hospital,,,,,,,,13.0985007,80.2796178
-node,262452334,City Tower Hospitals,healthcare,hospital,,,Tamil Nadu,600040,,info@citytowerhospitals.com,http://www.citytowerhospitals.net/contact.asp,13.08438,80.2160862
-node,263227115,Koramangala 3rd Block,amenity,post_office,,,,,,,,12.9271867,77.6266252
-node,263472490,Miniso,shop,variety_store,"419, 27th Main Road",Bangalore,,560034,,,,12.9185225,77.6518418
-node,263472498,And,shop,clothes,,,,,,,,12.9189346,77.65183
-node,263575322,Robert Clinical Laboratory,shop,convenience,,,,,,,,30.8656351,75.8723119
-node,263575929,Dr. Kumar's Homeo Clinic,shop,convenience,,,,,,,,30.8907167,75.8283212
-node,264481214,Nungambakkam,amenity,post_office,,,,,,,,13.0605534,80.2430157
-node,266323169,Bank of Baroda,amenity,bank,,,,,,,http://www.bankofbaroda.com,12.917181,77.6493619
-node,266324684,Gangothri Residency,tourism,hotel,Outer Ring Road,,,,,,,12.9212938,77.6635656
-node,266324687,Ringview Residency,tourism,hotel,Outer Ring Road,,,,,,,12.9214046,77.6639051
-node,266374765,Bharat Petroleum,amenity,fuel,,,,,,,,28.4324009,77.0478668
-node,266374789,Indian Oil,amenity,fuel,,,,,,,,28.4255168,77.0373704
-node,266376782,Standard Chartered Bank,amenity,bank,,,,,,,,28.4730702,77.0481254
-node,266428015,Regional Passport Office,office,government,,,,,,,,30.7242666,76.7693364
-node,266435424,DLF Supermart 1,shop,supermarket,,,,,,,,28.4624078,77.0874735
-node,266437720,ICICI Bank,amenity,bank,,,,,,,https://www.icicibank.com,28.4758053,77.0448914
-node,266437737,HDFC Bank,amenity,bank,,,,,,,https://www.hdfcbank.com,28.4760015,77.0450545
-node,266439671,Darbar,amenity,fast_food,,,,,,,,28.4528666,77.0406221
-node,266443204,Standard Chartered,amenity,bank,,,,,,,,28.5583495,77.164161
-node,266443228,McDonald's,amenity,fast_food,,,,,+91-11-66-000-666,,,28.5574267,77.1635699
-node,266472673,Priti Departmental Store,shop,convenience,,,,,,,,12.9174059,77.64853
-node,266472732,Adeshwara Electronics,shop,electronics,,,,,,,,12.9176987,77.6515426
-node,266472834,I-gate optic vision,shop,optics,,,,,,,,12.9192611,77.6518197
+node,266535263,Max Hospital,healthcare,hospital,,,,,,,,28.462841,77.0759312
+node,266599701,Indian Oil,amenity,fuel,Old Delhi Gurgaon Road,Gurugram,,122001,,,,28.4672528,77.0371571
+node,266687182,DLF Galleria,shop,mall,,,,,,,,28.4673018,77.0820492
+node,266729534,Block B Market,shop,supermarket,,,,,,,,28.417077,77.0466108
+node,266729557,Gardian Pharmacy,healthcare,pharmacy,,,,,,,,28.4169284,77.0467817
+node,266729875,Block D Market,shop,supermarket,,,,,,,,28.4173675,77.0510414
+node,266732618,Bikanervala,amenity,fast_food,,,,,,,,28.4689302,77.0638804
+node,266732634,Park Baluchi,amenity,restaurant,,,,,,,,28.4684904,77.0644002
+node,266734361,Domino's,amenity,fast_food,,,,,,,,28.4113681,77.0432317
+node,266739255,Meals House,amenity,fast_food,,,,,,,,12.8696335,77.6540449
+node,266739258,Looking Good Furniture,shop,furniture,,,,,,,,12.8667524,77.6554073
+node,266739259,Jubilan Motors Audi Showroom,shop,car,,,,,,,,12.8656106,77.6573594
+node,266739262,Volvo Service Center,shop,car_repair,,,,,,,,12.8625267,77.6598533
+node,266739263,Navneeth Motors BMW Showroom,shop,car,,,,,,,,12.8621083,77.6601795
+node,266740082,Swamy Hospital,healthcare,hospital,,,,,,,,12.8550625,77.6642727
+node,266740470,Food n Drinks,amenity,fast_food,,,,,,,,12.8507304,77.6573836
+node,266740687,Evolve Electronic City,amenity,restaurant,Velankani Drive,Bangalore,,560100,080 49653185,,,12.8456194,77.6588954
+node,266740732,Ranbaxy,office,yes,,,,,,,,28.4859475,77.0725647
+node,266740748,Genpact,office,yes,,,,,,,,28.4847405,77.0746246
+node,266809144,Karamsar Petrol Pump,amenity,fuel,,,,,,,,30.7298205,75.9533439
+node,266809614,Dandi March Statue (11 Murthi),tourism,attraction,,,,,,,,28.6100877,77.1916453
+node,267122070,M2M Cybernetics,office,company,"301, 4B, Mehrauli Gurgaon Road",Gurgaon,,122002,,,http://www.m2mcybernetics.com,28.482859,77.1043088
+node,267127244,HSBC,amenity,bank,,,,,,,,28.4810092,77.0851086
+node,267212843,HDFC Bank,amenity,bank,,,,,,,https://www.hdfcbank.com,12.9185253,77.6704998
+node,267214379,Clinic,healthcare,hospital,,,,,,,,12.9134182,77.6774852
+node,267309544,State Bank of India,amenity,bank,Kodungallur - Shornur Road,thrissur,,680008,,,,10.5445144,76.2130311
+node,267473867,Supreme Heritage,tourism,hotel,,,,,,,,19.0774433,73.0034195
+node,271335759,Indian Oil,amenity,fuel,,,,,,,,28.4946609,77.150715
+node,271335830,Indian Oil,amenity,fuel,,,,,,,,28.5043431,77.1719993
+node,271336389,Lord Krishna Bank,amenity,bank,,,,,,,,28.4795112,77.0831985
