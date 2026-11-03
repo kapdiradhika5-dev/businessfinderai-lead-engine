@@ -1,31 +1,31 @@
 ﻿osm_type,osm_id,name,category,subcategory,address,city,state,postcode,phone,email,website,latitude,longitude
-node,266535263,Max Hospital,healthcare,hospital,,,,,,,,28.462841,77.0759312
-node,266599701,Indian Oil,amenity,fuel,Old Delhi Gurgaon Road,Gurugram,,122001,,,,28.4672528,77.0371571
-node,266687182,DLF Galleria,shop,mall,,,,,,,,28.4673018,77.0820492
-node,266729534,Block B Market,shop,supermarket,,,,,,,,28.417077,77.0466108
-node,266729557,Gardian Pharmacy,healthcare,pharmacy,,,,,,,,28.4169284,77.0467817
-node,266729875,Block D Market,shop,supermarket,,,,,,,,28.4173675,77.0510414
-node,266732618,Bikanervala,amenity,fast_food,,,,,,,,28.4689302,77.0638804
-node,266732634,Park Baluchi,amenity,restaurant,,,,,,,,28.4684904,77.0644002
-node,266734361,Domino's,amenity,fast_food,,,,,,,,28.4113681,77.0432317
-node,266739255,Meals House,amenity,fast_food,,,,,,,,12.8696335,77.6540449
-node,266739258,Looking Good Furniture,shop,furniture,,,,,,,,12.8667524,77.6554073
-node,266739259,Jubilan Motors Audi Showroom,shop,car,,,,,,,,12.8656106,77.6573594
-node,266739262,Volvo Service Center,shop,car_repair,,,,,,,,12.8625267,77.6598533
-node,266739263,Navneeth Motors BMW Showroom,shop,car,,,,,,,,12.8621083,77.6601795
-node,266740082,Swamy Hospital,healthcare,hospital,,,,,,,,12.8550625,77.6642727
-node,266740470,Food n Drinks,amenity,fast_food,,,,,,,,12.8507304,77.6573836
-node,266740687,Evolve Electronic City,amenity,restaurant,Velankani Drive,Bangalore,,560100,080 49653185,,,12.8456194,77.6588954
-node,266740732,Ranbaxy,office,yes,,,,,,,,28.4859475,77.0725647
-node,266740748,Genpact,office,yes,,,,,,,,28.4847405,77.0746246
-node,266809144,Karamsar Petrol Pump,amenity,fuel,,,,,,,,30.7298205,75.9533439
-node,266809614,Dandi March Statue (11 Murthi),tourism,attraction,,,,,,,,28.6100877,77.1916453
-node,267122070,M2M Cybernetics,office,company,"301, 4B, Mehrauli Gurgaon Road",Gurgaon,,122002,,,http://www.m2mcybernetics.com,28.482859,77.1043088
-node,267127244,HSBC,amenity,bank,,,,,,,,28.4810092,77.0851086
-node,267212843,HDFC Bank,amenity,bank,,,,,,,https://www.hdfcbank.com,12.9185253,77.6704998
-node,267214379,Clinic,healthcare,hospital,,,,,,,,12.9134182,77.6774852
-node,267309544,State Bank of India,amenity,bank,Kodungallur - Shornur Road,thrissur,,680008,,,,10.5445144,76.2130311
-node,267473867,Supreme Heritage,tourism,hotel,,,,,,,,19.0774433,73.0034195
-node,271335759,Indian Oil,amenity,fuel,,,,,,,,28.4946609,77.150715
-node,271335830,Indian Oil,amenity,fuel,,,,,,,,28.5043431,77.1719993
-node,271336389,Lord Krishna Bank,amenity,bank,,,,,,,,28.4795112,77.0831985
+node,271336428,Kotak Mahindra Bank;india,amenity,bank,,,,,,,https://www.kotak.com/,28.4808629,77.0848883
+node,271336462,IBP Petrol Station,amenity,fuel,,,,,,,,28.4554895,77.0285383
+node,273514004,B-Zone Post Office,amenity,post_office,,,,,,,,23.5688077,87.3179349
+node,273515395,"State Bank of India, B-Zone Branch",amenity,bank,,,,,,,,23.5675807,87.3178568
+node,273515398,UCO Bank,amenity,bank,,,,,,,https://www.ucobank.com,23.5685061,87.3179298
+node,276812294,Manas,tourism,hotel,,,,,,,,16.6951864,74.45839
+node,276952668,Tara,amenity,restaurant,,,,,,,,16.6853143,74.4646432
+node,277165561,Ramachandran Handloom,shop,clothes,,,,,,,,9.963568,76.2846945
+node,277324558,Cafe Green,amenity,restaurant,,,,,,,,16.6938217,74.459177
+node,277324966,Chowdary tea stall,amenity,restaurant,,,,,,,,16.6936284,74.460579
+node,277420266,Panchshila Service Station,amenity,fuel,,,,,,,,28.5614441,77.2227829
+node,277420455,Indian Oil Corportation,amenity,fuel,,,,,,,,28.6043612,77.3230956
+node,277420612,Bharat Petroleum,amenity,fuel,,,,,,,,28.6345574,77.3154765
+node,277420908,Indian Oil,amenity,fuel,,,,,,,,28.659564,77.3550818
+node,277420968,Indian Oil,amenity,fuel,,,,,,,,28.5336932,77.1070198
+node,277420989,Indian Oil,amenity,fuel,,,,,,,,28.6394831,77.4249813
+node,277538691,Hotel Man,tourism,hotel,,,,,,,,16.6843251,74.4635284
+node,277792556,Bharat Petroleum,amenity,fuel,,,,,,,,28.6041804,77.3233182
+node,278165141,Indian Oil Petrol Pump,amenity,fuel,,,,,,,,28.6438531,77.3170505
+node,278165210,Indian Oil,amenity,fuel,,,,,,,,28.6552668,77.3472686
+node,278165227,Indian Oil,amenity,fuel,,,,,,,,28.6588641,77.3538527
+node,278165390,North India Mall,shop,supermarket,,,,,,,,28.633824,77.3696585
+node,278166391,Indian Oil,amenity,fuel,,,,,,,,28.3818927,76.9672657
+node,278166413,Petrol Pump Indian Oil,amenity,fuel,,,,,,,,28.3926607,76.9783194
+node,278166484,Petrol Pump Indian Oil,amenity,fuel,,,,,,,,28.4098097,76.9929142
+node,278166488,Petrol Pump IBP,amenity,fuel,,,,,,,,28.4192219,76.997265
+node,278430248,Axis Bank,amenity,bank,,,,,,,https://www.axisbank.com,11.4079779,76.7067824
+node,278667870,Savoy Hotel,tourism,hotel,,,,,,,,11.4150602,76.6933561
+node,278887458,Magar Petrol Pump,amenity,fuel,Mundwha Road,Pune,Maharashtra,411013,,,,18.5152532,73.9330133
+node,278937349,Earls Secret,amenity,restaurant,,,,,,,,11.4201722,76.6983592
