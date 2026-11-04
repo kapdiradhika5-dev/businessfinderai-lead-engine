@@ -1,31 +1,31 @@
 ﻿osm_type,osm_id,name,category,subcategory,address,city,state,postcode,phone,email,website,latitude,longitude
-node,271336428,Kotak Mahindra Bank;india,amenity,bank,,,,,,,https://www.kotak.com/,28.4808629,77.0848883
-node,271336462,IBP Petrol Station,amenity,fuel,,,,,,,,28.4554895,77.0285383
-node,273514004,B-Zone Post Office,amenity,post_office,,,,,,,,23.5688077,87.3179349
-node,273515395,"State Bank of India, B-Zone Branch",amenity,bank,,,,,,,,23.5675807,87.3178568
-node,273515398,UCO Bank,amenity,bank,,,,,,,https://www.ucobank.com,23.5685061,87.3179298
-node,276812294,Manas,tourism,hotel,,,,,,,,16.6951864,74.45839
-node,276952668,Tara,amenity,restaurant,,,,,,,,16.6853143,74.4646432
-node,277165561,Ramachandran Handloom,shop,clothes,,,,,,,,9.963568,76.2846945
-node,277324558,Cafe Green,amenity,restaurant,,,,,,,,16.6938217,74.459177
-node,277324966,Chowdary tea stall,amenity,restaurant,,,,,,,,16.6936284,74.460579
-node,277420266,Panchshila Service Station,amenity,fuel,,,,,,,,28.5614441,77.2227829
-node,277420455,Indian Oil Corportation,amenity,fuel,,,,,,,,28.6043612,77.3230956
-node,277420612,Bharat Petroleum,amenity,fuel,,,,,,,,28.6345574,77.3154765
-node,277420908,Indian Oil,amenity,fuel,,,,,,,,28.659564,77.3550818
-node,277420968,Indian Oil,amenity,fuel,,,,,,,,28.5336932,77.1070198
-node,277420989,Indian Oil,amenity,fuel,,,,,,,,28.6394831,77.4249813
-node,277538691,Hotel Man,tourism,hotel,,,,,,,,16.6843251,74.4635284
-node,277792556,Bharat Petroleum,amenity,fuel,,,,,,,,28.6041804,77.3233182
-node,278165141,Indian Oil Petrol Pump,amenity,fuel,,,,,,,,28.6438531,77.3170505
-node,278165210,Indian Oil,amenity,fuel,,,,,,,,28.6552668,77.3472686
-node,278165227,Indian Oil,amenity,fuel,,,,,,,,28.6588641,77.3538527
-node,278165390,North India Mall,shop,supermarket,,,,,,,,28.633824,77.3696585
-node,278166391,Indian Oil,amenity,fuel,,,,,,,,28.3818927,76.9672657
-node,278166413,Petrol Pump Indian Oil,amenity,fuel,,,,,,,,28.3926607,76.9783194
-node,278166484,Petrol Pump Indian Oil,amenity,fuel,,,,,,,,28.4098097,76.9929142
-node,278166488,Petrol Pump IBP,amenity,fuel,,,,,,,,28.4192219,76.997265
-node,278430248,Axis Bank,amenity,bank,,,,,,,https://www.axisbank.com,11.4079779,76.7067824
-node,278667870,Savoy Hotel,tourism,hotel,,,,,,,,11.4150602,76.6933561
-node,278887458,Magar Petrol Pump,amenity,fuel,Mundwha Road,Pune,Maharashtra,411013,,,,18.5152532,73.9330133
-node,278937349,Earls Secret,amenity,restaurant,,,,,,,,11.4201722,76.6983592
+node,278937352,Kings Cliffe,tourism,guest_house,,,,,,,,11.420113,76.6982983
+node,279131899,Destiny,tourism,guest_house,,,,,,,,11.322362,76.6000125
+node,279161182,ICICI Bank,amenity,bank,,,,,,,https://www.icicibank.com,28.525047,77.1570574
+node,279161187,Indian Oil,amenity,fuel,,,,,,,,28.5262695,77.1561648
+node,279231337,Sullivan Court,tourism,hotel,,,,,,,,11.4078935,76.711119
+node,279962108,seaview,tourism,hotel,,,,,,,,19.0959916,72.8269037
+node,280167014,Bharat Petroleum,amenity,fuel,,,,,,,,11.3140656,76.9281174
+node,280167015,Hindustan Petroleum,amenity,fuel,,,,,,,,11.3154224,76.9262103
+node,280167016,Indian Oil,amenity,fuel,,,,,,,,11.3175143,76.9223626
+node,280187183,Ooty Gate,tourism,hotel,,,,,,,,11.4082292,76.7130939
+node,280187185,Preethi paradise,tourism,hotel,,,,,,,,11.4094569,76.71199
+node,280187198,Indian Oil,amenity,fuel,,,,,,,,11.4103509,76.7114165
+node,280187202,Bharat Petroleum,amenity,fuel,,,,,,,,11.4117612,76.7087327
+node,280187203,Hindustan Petroleum,amenity,fuel,,,,,,,,11.4121827,76.7086785
+node,280387847,Bharat Petroleum,amenity,fuel,,,,,,,,11.3792795,76.7466935
+node,280741143,Axis Bank,amenity,bank,,,,,,,https://www.axisbank.com,28.64725,77.194235
+node,281903680,Government Hospital,amenity,hospital,,,Tamil Nadu,643001,,,,11.4085627,76.7002627
+node,282437657,Greenfield,amenity,restaurant,,,,,,,,11.345378,76.7994117
+node,282437665,Vivek Tourist Home,tourism,hotel,,,,,,,,11.3452569,76.7992606
+node,282674695,Hotel TamilNadu _ ooty,tourism,hotel,,,,,,,,11.4117615,76.7067023
+node,282873365,SRI AARVEE CANTEEN,amenity,restaurant,"395, Sarojini Naidu Road",coimbatore,,641044,,,,11.0234529,76.9780253
+node,283144393,"Mayur Retreat , Lupin Learning",tourism,hotel,,,,,,,,18.7591718,73.3942336
+node,283144394,Lion Point,tourism,viewpoint,,,,,,,,18.7041145,73.3876167
+node,283152692,Diagnopien,healthcare,sample_collection,,,,,,,,18.5480228,73.920474
+node,283152697,McDonald's,amenity,fast_food,,,,,,,,18.5457237,73.9062599
+node,283163978,The Charcoal Pit,amenity,restaurant,,,,,,,,18.5167868,73.8791405
+node,283166314,The Great Punjab,amenity,restaurant,,,,,,,,18.53651,73.8975087
+node,283166318,Shisha Jazz Cafe,amenity,cafe,,,,,,,,18.5391279,73.9049627
+node,283204710,Roshini Petrol Pump,amenity,fuel,,Pune,MH,,,,,18.539254,73.885693
+node,283634741,Sterling Resorts Elkhill,tourism,guest_house,,,,,,,,11.3970023,76.7031209
