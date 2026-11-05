@@ -1,31 +1,31 @@
 ﻿osm_type,osm_id,name,category,subcategory,address,city,state,postcode,phone,email,website,latitude,longitude
-node,278937352,Kings Cliffe,tourism,guest_house,,,,,,,,11.420113,76.6982983
-node,279131899,Destiny,tourism,guest_house,,,,,,,,11.322362,76.6000125
-node,279161182,ICICI Bank,amenity,bank,,,,,,,https://www.icicibank.com,28.525047,77.1570574
-node,279161187,Indian Oil,amenity,fuel,,,,,,,,28.5262695,77.1561648
-node,279231337,Sullivan Court,tourism,hotel,,,,,,,,11.4078935,76.711119
-node,279962108,seaview,tourism,hotel,,,,,,,,19.0959916,72.8269037
-node,280167014,Bharat Petroleum,amenity,fuel,,,,,,,,11.3140656,76.9281174
-node,280167015,Hindustan Petroleum,amenity,fuel,,,,,,,,11.3154224,76.9262103
-node,280167016,Indian Oil,amenity,fuel,,,,,,,,11.3175143,76.9223626
-node,280187183,Ooty Gate,tourism,hotel,,,,,,,,11.4082292,76.7130939
-node,280187185,Preethi paradise,tourism,hotel,,,,,,,,11.4094569,76.71199
-node,280187198,Indian Oil,amenity,fuel,,,,,,,,11.4103509,76.7114165
-node,280187202,Bharat Petroleum,amenity,fuel,,,,,,,,11.4117612,76.7087327
-node,280187203,Hindustan Petroleum,amenity,fuel,,,,,,,,11.4121827,76.7086785
-node,280387847,Bharat Petroleum,amenity,fuel,,,,,,,,11.3792795,76.7466935
-node,280741143,Axis Bank,amenity,bank,,,,,,,https://www.axisbank.com,28.64725,77.194235
-node,281903680,Government Hospital,amenity,hospital,,,Tamil Nadu,643001,,,,11.4085627,76.7002627
-node,282437657,Greenfield,amenity,restaurant,,,,,,,,11.345378,76.7994117
-node,282437665,Vivek Tourist Home,tourism,hotel,,,,,,,,11.3452569,76.7992606
-node,282674695,Hotel TamilNadu _ ooty,tourism,hotel,,,,,,,,11.4117615,76.7067023
-node,282873365,SRI AARVEE CANTEEN,amenity,restaurant,"395, Sarojini Naidu Road",coimbatore,,641044,,,,11.0234529,76.9780253
-node,283144393,"Mayur Retreat , Lupin Learning",tourism,hotel,,,,,,,,18.7591718,73.3942336
-node,283144394,Lion Point,tourism,viewpoint,,,,,,,,18.7041145,73.3876167
-node,283152692,Diagnopien,healthcare,sample_collection,,,,,,,,18.5480228,73.920474
-node,283152697,McDonald's,amenity,fast_food,,,,,,,,18.5457237,73.9062599
-node,283163978,The Charcoal Pit,amenity,restaurant,,,,,,,,18.5167868,73.8791405
-node,283166314,The Great Punjab,amenity,restaurant,,,,,,,,18.53651,73.8975087
-node,283166318,Shisha Jazz Cafe,amenity,cafe,,,,,,,,18.5391279,73.9049627
-node,283204710,Roshini Petrol Pump,amenity,fuel,,Pune,MH,,,,,18.539254,73.885693
-node,283634741,Sterling Resorts Elkhill,tourism,guest_house,,,,,,,,11.3970023,76.7031209
+node,283647757,Hotel Grand Krishna,tourism,hotel,,,,,,,,12.9401418,79.1758221
+node,283651211,Motel Rosin,tourism,motel,,,,,,,,12.7367923,78.6874149
+node,286997045,Mangalore Club,tourism,guest_house,,,,,,,,12.8432335,74.8533924
+node,287039742,Durga Nursery,shop,garden_centre,,,,,,,,30.879133,75.867687
+node,287411687,World's Highest Altitude Retail Pump,amenity,fuel,,,,,,,,32.227631,78.0699447
+node,287791653,North Coorg Club,tourism,guest_house,,,,,,,,12.4218897,75.740437
+node,287835456,Abayaranyam,tourism,guest_house,,,,,,,,11.5365598,76.5235016
+node,287835464,Pugmark,amenity,restaurant,,,,,,,,11.7037397,76.6411246
+node,287835472,Bandipur plaza,amenity,restaurant,,,,,,,,11.7057812,76.6420506
+node,287835478,Coffee Stoppe,amenity,restaurant,,,,,,,,11.8376932,76.6760019
+node,288088583,Kerala club,tourism,guest_house,,,,,,,,11.0078414,76.9736138
+node,288413533,King's Gents Beaury Parlour,shop,hairdresser,,,,,,,,11.8785293,75.3746927
+node,289023382,Brighto Stationers,shop,books,,,,,,,,30.8853304,75.8614604
+node,289401995,Gol Market,amenity,marketplace,,,,,,,,30.8890619,75.8413009
+node,289486820,"Apollo Hospitals, Tondiarpet",healthcare,hospital,,,Tamil Nadu,600081,,enquiry@apollohospitals.com,https://www.apollohospitals.com/,13.1289367,80.2905623
+node,289607572,Big Bazaar,shop,supermarket,,,,,,,,11.2486912,75.7799088
+node,289607576,Mittayi Theruvu,tourism,attraction,,,,,,,,11.2499089,75.7813404
+node,289607581,Halwa Bazaar,shop,outdoor,,,,,,,,11.248559,75.775017
+node,289607586,Copra Bazaar,shop,outdoor,,,,,,,,11.24928,75.775421
+node,289607627,Imperial Hotel,amenity,restaurant,Oyitty Road,Kozhikode,,,,,,11.248523,75.783714
+node,289607637,Canara Bank,amenity,bank,,,,,,,https://www.canarabank.com/,11.249128,75.776756
+node,289607827,Collectorate/Civil Station,office,government,,,,,,,,11.2842224,75.7915034
+node,289607867,"Government Medical College, Kozhikode",healthcare,hospice,"17, Medical College Road","Kozhikode, Kerala",,673008,,,,11.2721832,75.8371458
+node,289607903,Sarovaram Boating,tourism,attraction,,,,,,,,11.267021,75.794123
+node,290376397,Kmall,tourism,hotel,,,,,,,,30.8921321,75.8479649
+node,290378992,Sohna Motel,tourism,motel,,,,,,,,28.2449787,77.0637939
+node,290382755,Dhaba,amenity,restaurant,,,,,,,,28.2972557,77.0670586
+node,291683210,arkay systems,office,yes,,,,,,,,11.0224082,76.9929061
+node,292205864,Oasis,amenity,restaurant,,,,641301,,,,11.2919243,76.9397742
+node,292742983,Taj Ganges Varanasi,tourism,hotel,Nadesar palace grounds,Varanasi,,221002,+91 542-6660002,,https://www.tajhotels.com/en-in/taj/taj-nadesar-palace-varanasi/,25.3361332,82.9862781
