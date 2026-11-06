@@ -1,31 +1,31 @@
 ﻿osm_type,osm_id,name,category,subcategory,address,city,state,postcode,phone,email,website,latitude,longitude
-node,283647757,Hotel Grand Krishna,tourism,hotel,,,,,,,,12.9401418,79.1758221
-node,283651211,Motel Rosin,tourism,motel,,,,,,,,12.7367923,78.6874149
-node,286997045,Mangalore Club,tourism,guest_house,,,,,,,,12.8432335,74.8533924
-node,287039742,Durga Nursery,shop,garden_centre,,,,,,,,30.879133,75.867687
-node,287411687,World's Highest Altitude Retail Pump,amenity,fuel,,,,,,,,32.227631,78.0699447
-node,287791653,North Coorg Club,tourism,guest_house,,,,,,,,12.4218897,75.740437
-node,287835456,Abayaranyam,tourism,guest_house,,,,,,,,11.5365598,76.5235016
-node,287835464,Pugmark,amenity,restaurant,,,,,,,,11.7037397,76.6411246
-node,287835472,Bandipur plaza,amenity,restaurant,,,,,,,,11.7057812,76.6420506
-node,287835478,Coffee Stoppe,amenity,restaurant,,,,,,,,11.8376932,76.6760019
-node,288088583,Kerala club,tourism,guest_house,,,,,,,,11.0078414,76.9736138
-node,288413533,King's Gents Beaury Parlour,shop,hairdresser,,,,,,,,11.8785293,75.3746927
-node,289023382,Brighto Stationers,shop,books,,,,,,,,30.8853304,75.8614604
-node,289401995,Gol Market,amenity,marketplace,,,,,,,,30.8890619,75.8413009
-node,289486820,"Apollo Hospitals, Tondiarpet",healthcare,hospital,,,Tamil Nadu,600081,,enquiry@apollohospitals.com,https://www.apollohospitals.com/,13.1289367,80.2905623
-node,289607572,Big Bazaar,shop,supermarket,,,,,,,,11.2486912,75.7799088
-node,289607576,Mittayi Theruvu,tourism,attraction,,,,,,,,11.2499089,75.7813404
-node,289607581,Halwa Bazaar,shop,outdoor,,,,,,,,11.248559,75.775017
-node,289607586,Copra Bazaar,shop,outdoor,,,,,,,,11.24928,75.775421
-node,289607627,Imperial Hotel,amenity,restaurant,Oyitty Road,Kozhikode,,,,,,11.248523,75.783714
-node,289607637,Canara Bank,amenity,bank,,,,,,,https://www.canarabank.com/,11.249128,75.776756
-node,289607827,Collectorate/Civil Station,office,government,,,,,,,,11.2842224,75.7915034
-node,289607867,"Government Medical College, Kozhikode",healthcare,hospice,"17, Medical College Road","Kozhikode, Kerala",,673008,,,,11.2721832,75.8371458
-node,289607903,Sarovaram Boating,tourism,attraction,,,,,,,,11.267021,75.794123
-node,290376397,Kmall,tourism,hotel,,,,,,,,30.8921321,75.8479649
-node,290378992,Sohna Motel,tourism,motel,,,,,,,,28.2449787,77.0637939
-node,290382755,Dhaba,amenity,restaurant,,,,,,,,28.2972557,77.0670586
-node,291683210,arkay systems,office,yes,,,,,,,,11.0224082,76.9929061
-node,292205864,Oasis,amenity,restaurant,,,,641301,,,,11.2919243,76.9397742
-node,292742983,Taj Ganges Varanasi,tourism,hotel,Nadesar palace grounds,Varanasi,,221002,+91 542-6660002,,https://www.tajhotels.com/en-in/taj/taj-nadesar-palace-varanasi/,25.3361332,82.9862781
+node,293208846,Mata Anandmayee Hospital,healthcare,hospital,,Varanasi,,,,,,25.2929029,83.0055074
+node,293217395,Diamond Hotel,tourism,hotel,,,,,,,,25.2979947,83.0015252
+node,293222739,Hanuman Ghat,tourism,attraction,,,,,,,,25.2972001,83.0073734
+node,293483127,Clark´s Hotel,tourism,hotel,,,,,,,,25.3364932,82.9778759
+node,293673693,Jackson Creek,tourism,attraction,,,,,,,,10.73334,92.36668
+node,293673706,Dugong Creek,tourism,attraction,,,,,,,,10.76667,92.61668
+node,293673830,Stewartganj Creek,tourism,attraction,,,,,,,,11.70001,92.7
+node,293674049,Parangara,tourism,attraction,,,,,,,,13.05,92.9
+node,293674115,Kalara,tourism,attraction,,,,,,,,13.05,92.91668
+node,293675265,Forest Museum,tourism,museum,,,,,,,,11.6773956,92.7240092
+node,293675271,Mini Zoo,tourism,zoo,,,,,,,,11.67744,92.72536
+node,293675295,Gouverment Guest House,tourism,motel,,,,,,,,11.67207,92.72727
+node,293675299,Hornbill Nest resort,tourism,hotel,,,,,,,,11.64727,92.75384
+node,293675304,Peerless Resort,tourism,hotel,,,,,,,,11.64401,92.74626
+node,293687743,Arvind International,tourism,motel,,,,,,,,11.62366,92.72055
+node,293690184,Aberdeen Bazar Post Office,amenity,post_office,,,,,,,,11.67188,92.74585
+node,293690187,State Bank of India,amenity,bank,,,,744101,,,,11.6687689,92.739692
+node,293690188,YMCA,tourism,motel,,,,,,,,11.66542,92.74047
+node,293690194,Ayush Tours and Travels,shop,travel_agency,"45, MG Road",Port Blair,,744102,+917872000098,,https://www.andamantouroperator.in/,11.66705,92.74334
+node,293690202,Sinclairs Bay View,tourism,hotel,Corbyns Cove Road,,,,,,,11.66413,92.75598
+node,293690205,JNRM Boys Hostel,tourism,hostel,,,,,,,,11.66349,92.75345
+node,293691030,The Waves,amenity,restaurant,,,,,,,,11.64283,92.74656
+node,293691031,Netaji Club,amenity,pub,,,,,,,,11.67066,92.7427
+node,293691032,Saganka emporiium,shop,convenience,,,,,,,,11.6645,92.73645
+node,293692101,Hotel resort,tourism,motel,,,,,,,,11.66784,92.72991
+node,293692102,NK International,tourism,motel,,,,,,,,11.6704,92.73176
+node,293692103,Swagat Lodge,tourism,hotel,,,,,,,,11.66971,92.74057
+node,293692113,Mathoma Church Complex,tourism,attraction,,,,,,,,11.6651,92.73266
+node,293692115,Island Arcade,amenity,restaurant,,,,,,,,11.6586054,92.7313059
+node,293692116,Nagrii Inn,tourism,motel,,,,,,,,11.65302,92.73165
