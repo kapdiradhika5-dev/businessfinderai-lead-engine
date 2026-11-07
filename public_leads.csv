@@ -1,31 +1,31 @@
 ﻿osm_type,osm_id,name,category,subcategory,address,city,state,postcode,phone,email,website,latitude,longitude
-node,293208846,Mata Anandmayee Hospital,healthcare,hospital,,Varanasi,,,,,,25.2929029,83.0055074
-node,293217395,Diamond Hotel,tourism,hotel,,,,,,,,25.2979947,83.0015252
-node,293222739,Hanuman Ghat,tourism,attraction,,,,,,,,25.2972001,83.0073734
-node,293483127,Clark´s Hotel,tourism,hotel,,,,,,,,25.3364932,82.9778759
-node,293673693,Jackson Creek,tourism,attraction,,,,,,,,10.73334,92.36668
-node,293673706,Dugong Creek,tourism,attraction,,,,,,,,10.76667,92.61668
-node,293673830,Stewartganj Creek,tourism,attraction,,,,,,,,11.70001,92.7
-node,293674049,Parangara,tourism,attraction,,,,,,,,13.05,92.9
-node,293674115,Kalara,tourism,attraction,,,,,,,,13.05,92.91668
-node,293675265,Forest Museum,tourism,museum,,,,,,,,11.6773956,92.7240092
-node,293675271,Mini Zoo,tourism,zoo,,,,,,,,11.67744,92.72536
-node,293675295,Gouverment Guest House,tourism,motel,,,,,,,,11.67207,92.72727
-node,293675299,Hornbill Nest resort,tourism,hotel,,,,,,,,11.64727,92.75384
-node,293675304,Peerless Resort,tourism,hotel,,,,,,,,11.64401,92.74626
-node,293687743,Arvind International,tourism,motel,,,,,,,,11.62366,92.72055
-node,293690184,Aberdeen Bazar Post Office,amenity,post_office,,,,,,,,11.67188,92.74585
-node,293690187,State Bank of India,amenity,bank,,,,744101,,,,11.6687689,92.739692
-node,293690188,YMCA,tourism,motel,,,,,,,,11.66542,92.74047
-node,293690194,Ayush Tours and Travels,shop,travel_agency,"45, MG Road",Port Blair,,744102,+917872000098,,https://www.andamantouroperator.in/,11.66705,92.74334
-node,293690202,Sinclairs Bay View,tourism,hotel,Corbyns Cove Road,,,,,,,11.66413,92.75598
-node,293690205,JNRM Boys Hostel,tourism,hostel,,,,,,,,11.66349,92.75345
-node,293691030,The Waves,amenity,restaurant,,,,,,,,11.64283,92.74656
-node,293691031,Netaji Club,amenity,pub,,,,,,,,11.67066,92.7427
-node,293691032,Saganka emporiium,shop,convenience,,,,,,,,11.6645,92.73645
-node,293692101,Hotel resort,tourism,motel,,,,,,,,11.66784,92.72991
-node,293692102,NK International,tourism,motel,,,,,,,,11.6704,92.73176
-node,293692103,Swagat Lodge,tourism,hotel,,,,,,,,11.66971,92.74057
-node,293692113,Mathoma Church Complex,tourism,attraction,,,,,,,,11.6651,92.73266
-node,293692115,Island Arcade,amenity,restaurant,,,,,,,,11.6586054,92.7313059
-node,293692116,Nagrii Inn,tourism,motel,,,,,,,,11.65302,92.73165
+node,293692150,Mohwa,amenity,restaurant,,,,,,,,11.9850149,92.9520558
+node,293692151,Hotel Megapode Nest,tourism,hotel,,,,,,,,11.67707,92.73004
+node,293692169,New Light House,amenity,restaurant,,,,,,,,11.6717046,92.7465694
+node,293692183,Japanese WWII Bunker,tourism,yes,,,,,,,,11.6757037,92.7605618
+node,294127865,Punjabi Hospital,healthcare,hospital,,,,,,,,25.3460988,83.0372616
+node,295544111,K.H.M. Hospital,healthcare,hospital,,,Tamil Nadu,600040,,khmhospital@gmail.com,https://khmhospital.com/,13.0844992,80.2130591
+node,295544408,Anna Nagar post office,amenity,post_office,,,,,,,,13.0846666,80.2075642
+node,295552091,Sundaram Medical Foundation,healthcare,hospital,,,Tamil Nadu,600040,,,,13.08217,80.2069819
+node,295552092,Sri Devi Speciality Hospial,healthcare,hospital,,,Tamil Nadu,600040,,,,13.0887983,80.1994692
+node,295552094,அண்ணா நகர் கோபுரம்,tourism,viewpoint,,,,,,,,13.0863046,80.2137898
+node,295751003,IISc Post Office,amenity,post_office,,,,,,,,13.0139623,77.5665181
+node,296341039,Worliway Service Station,amenity,fuel,,,,,,,,18.997908,72.817372
+node,296341340,Nirula's,amenity,fast_food,,,,,,,,28.4106834,77.0431666
+node,296357707,Citizen Hotel,tourism,hotel,,,,,,,,19.095697,72.8269623
+node,297255247,ICICI Bank,amenity,bank,,,,,,,https://www.icicibank.com,28.4590293,77.076436
+node,297255248,HDFC Bank,amenity,bank,,,,,,,https://www.hdfcbank.com,28.4590161,77.0763889
+node,297521871,Deekshabhoomi,tourism,attraction,,,,,,,,21.1282013,79.06693
+node,297648562,Govt. Medical College,healthcare,hospital,,,,,,,,21.1295149,79.0974689
+node,298372173,Gateway,tourism,hotel,,,,,,,,12.8619,74.8353276
+node,298598325,Haldiram's,amenity,fast_food,,,,,,,,21.1418145,79.082042
+node,298598964,Haldiram's,amenity,fast_food,,,,,,,,21.1414942,79.0608763
+node,299190531,Indira Gandhi Medical College & Hospital,healthcare,hospital,,,,,,,,21.1541868,79.0936492
+node,299524904,Tata Book Store,shop,books,,,,,,,,13.0146763,77.5681459
+node,299644026,Powari petrol,amenity,fuel,,,,,,,,31.5370799,78.2806199
+node,299659791,Indian Oil,amenity,fuel,,,,,,,,32.5454454,76.9742174
+node,299707352,Indian Oil,amenity,fuel,,,,,,,,34.1522812,77.5770345
+node,299707818,Indian Oil,amenity,fuel,,,,,,,,34.1170591,77.5888307
+node,299764782,Petrol Pump,amenity,fuel,,,,,,,,34.5415563,76.1509754
+node,300033654,Hotel Palace View,tourism,hotel,,,,,,,,28.0390723,73.3274015
+node,300033902,LAL NIWAS,tourism,hotel,,,,,,,,27.1318809,72.3595582
