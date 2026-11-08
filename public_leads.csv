@@ -1,31 +1,31 @@
 ﻿osm_type,osm_id,name,category,subcategory,address,city,state,postcode,phone,email,website,latitude,longitude
-node,293692150,Mohwa,amenity,restaurant,,,,,,,,11.9850149,92.9520558
-node,293692151,Hotel Megapode Nest,tourism,hotel,,,,,,,,11.67707,92.73004
-node,293692169,New Light House,amenity,restaurant,,,,,,,,11.6717046,92.7465694
-node,293692183,Japanese WWII Bunker,tourism,yes,,,,,,,,11.6757037,92.7605618
-node,294127865,Punjabi Hospital,healthcare,hospital,,,,,,,,25.3460988,83.0372616
-node,295544111,K.H.M. Hospital,healthcare,hospital,,,Tamil Nadu,600040,,khmhospital@gmail.com,https://khmhospital.com/,13.0844992,80.2130591
-node,295544408,Anna Nagar post office,amenity,post_office,,,,,,,,13.0846666,80.2075642
-node,295552091,Sundaram Medical Foundation,healthcare,hospital,,,Tamil Nadu,600040,,,,13.08217,80.2069819
-node,295552092,Sri Devi Speciality Hospial,healthcare,hospital,,,Tamil Nadu,600040,,,,13.0887983,80.1994692
-node,295552094,அண்ணா நகர் கோபுரம்,tourism,viewpoint,,,,,,,,13.0863046,80.2137898
-node,295751003,IISc Post Office,amenity,post_office,,,,,,,,13.0139623,77.5665181
-node,296341039,Worliway Service Station,amenity,fuel,,,,,,,,18.997908,72.817372
-node,296341340,Nirula's,amenity,fast_food,,,,,,,,28.4106834,77.0431666
-node,296357707,Citizen Hotel,tourism,hotel,,,,,,,,19.095697,72.8269623
-node,297255247,ICICI Bank,amenity,bank,,,,,,,https://www.icicibank.com,28.4590293,77.076436
-node,297255248,HDFC Bank,amenity,bank,,,,,,,https://www.hdfcbank.com,28.4590161,77.0763889
-node,297521871,Deekshabhoomi,tourism,attraction,,,,,,,,21.1282013,79.06693
-node,297648562,Govt. Medical College,healthcare,hospital,,,,,,,,21.1295149,79.0974689
-node,298372173,Gateway,tourism,hotel,,,,,,,,12.8619,74.8353276
-node,298598325,Haldiram's,amenity,fast_food,,,,,,,,21.1418145,79.082042
-node,298598964,Haldiram's,amenity,fast_food,,,,,,,,21.1414942,79.0608763
-node,299190531,Indira Gandhi Medical College & Hospital,healthcare,hospital,,,,,,,,21.1541868,79.0936492
-node,299524904,Tata Book Store,shop,books,,,,,,,,13.0146763,77.5681459
-node,299644026,Powari petrol,amenity,fuel,,,,,,,,31.5370799,78.2806199
-node,299659791,Indian Oil,amenity,fuel,,,,,,,,32.5454454,76.9742174
-node,299707352,Indian Oil,amenity,fuel,,,,,,,,34.1522812,77.5770345
-node,299707818,Indian Oil,amenity,fuel,,,,,,,,34.1170591,77.5888307
-node,299764782,Petrol Pump,amenity,fuel,,,,,,,,34.5415563,76.1509754
-node,300033654,Hotel Palace View,tourism,hotel,,,,,,,,28.0390723,73.3274015
-node,300033902,LAL NIWAS,tourism,hotel,,,,,,,,27.1318809,72.3595582
+node,300138103,Prakash Hospital Pvt Ltd,amenity,hospital,,,Uttar Pradesh,201301,,,,28.5854878,77.3494026
+node,301354121,Canara Bank Holiday Home,tourism,guest_house,2nd Main Road,,,,,,,12.9316521,77.5907098
+node,301725737,Tangerine,amenity,restaurant,,,,,,,,13.0392554,80.2556216
+node,301725738,Ente Keralam,amenity,restaurant,,,,,,,,13.0421141,80.2558968
+node,301725748,Samco,tourism,hotel,,,,,,,,13.0382411,80.256529
+node,301725751,Suriyas,amenity,restaurant,,,,,,,,13.0383186,80.2566708
+node,301725759,Home Centre,shop,furniture,,,,,,,,13.0381674,80.2571875
+node,301725766,Reliance Fresh,shop,supermarket,,,,,,,,13.0390386,80.2508349
+node,301725773,Eldams Lodge,tourism,hotel,,,,,,,,13.0390202,80.2488531
+node,301738570,Ananda,amenity,restaurant,,,,,,,,13.0392095,80.2471051
+node,301738571,HP,amenity,fuel,,,,,,,,13.0391669,80.2573351
+node,301738572,HP,amenity,fuel,,,,,,,,13.0402403,80.2468562
+node,301738744,State Bank of India,amenity,bank,,,,,,,,13.0410323,80.2578002
+node,301816128,Midnight Express,amenity,restaurant,,,,,,,,13.0409358,80.2586973
+node,302884332,Teynampet West,amenity,post_office,,,,,,,,13.0474874,80.2485425
+node,302884335,Teynampet South,amenity,post_office,,,,,,,,13.0397372,80.2473014
+node,303283689,State Bank of India,amenity,bank,,,,,,,,13.0831682,80.2785099
+node,303283947,Lily Pond Shopping Complex,shop,mall,,,,,,,,13.0833302,80.272561
+node,303590777,Corporation Hospital,healthcare,hospital,,,,,,,,13.0336624,80.2572467
+node,303601613,Eldams Road Post Office,amenity,post_office,,,,,,,,13.0380671,80.2528387
+node,303917501,ICICI Bank,amenity,bank,Elephant Cave Road,,,560011,,,https://www.icicibank.com,12.9331091,77.5835191
+node,303917702,Jayanagar 3rd Block PO,amenity,post_office,,,,,,,,12.9303756,77.583314
+node,303924572,Shanti Hospital,amenity,hospital,,,,,,,,12.9235041,77.5857517
+node,303933809,State Bank of India,amenity,bank,,,,,,,,12.9365346,77.627846
+node,303938132,Bharat Petroleum,amenity,fuel,Elephant Cave Road,,,,,,,12.9365895,77.5804447
+node,304832055,Uday Samudra,tourism,hotel,,,,,,,,8.4014875,76.9724317
+node,304832059,Samudra,tourism,hotel,,,,,,,https://www.ktdc.com/samudra/,8.4001231,76.9728292
+node,304948425,Lala's Cafe,amenity,cafe,,,,,,,,34.1648984,77.586291
+node,304948431,Womens' Association,tourism,information,,,,,,,,34.1680015,77.5869878
+node,304948432,Mahey,tourism,guest_house,,,,,,,,34.1642091,77.5752521
