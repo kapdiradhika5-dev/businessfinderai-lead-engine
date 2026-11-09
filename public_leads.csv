@@ -1,31 +1,31 @@
 ﻿osm_type,osm_id,name,category,subcategory,address,city,state,postcode,phone,email,website,latitude,longitude
-node,300138103,Prakash Hospital Pvt Ltd,amenity,hospital,,,Uttar Pradesh,201301,,,,28.5854878,77.3494026
-node,301354121,Canara Bank Holiday Home,tourism,guest_house,2nd Main Road,,,,,,,12.9316521,77.5907098
-node,301725737,Tangerine,amenity,restaurant,,,,,,,,13.0392554,80.2556216
-node,301725738,Ente Keralam,amenity,restaurant,,,,,,,,13.0421141,80.2558968
-node,301725748,Samco,tourism,hotel,,,,,,,,13.0382411,80.256529
-node,301725751,Suriyas,amenity,restaurant,,,,,,,,13.0383186,80.2566708
-node,301725759,Home Centre,shop,furniture,,,,,,,,13.0381674,80.2571875
-node,301725766,Reliance Fresh,shop,supermarket,,,,,,,,13.0390386,80.2508349
-node,301725773,Eldams Lodge,tourism,hotel,,,,,,,,13.0390202,80.2488531
-node,301738570,Ananda,amenity,restaurant,,,,,,,,13.0392095,80.2471051
-node,301738571,HP,amenity,fuel,,,,,,,,13.0391669,80.2573351
-node,301738572,HP,amenity,fuel,,,,,,,,13.0402403,80.2468562
-node,301738744,State Bank of India,amenity,bank,,,,,,,,13.0410323,80.2578002
-node,301816128,Midnight Express,amenity,restaurant,,,,,,,,13.0409358,80.2586973
-node,302884332,Teynampet West,amenity,post_office,,,,,,,,13.0474874,80.2485425
-node,302884335,Teynampet South,amenity,post_office,,,,,,,,13.0397372,80.2473014
-node,303283689,State Bank of India,amenity,bank,,,,,,,,13.0831682,80.2785099
-node,303283947,Lily Pond Shopping Complex,shop,mall,,,,,,,,13.0833302,80.272561
-node,303590777,Corporation Hospital,healthcare,hospital,,,,,,,,13.0336624,80.2572467
-node,303601613,Eldams Road Post Office,amenity,post_office,,,,,,,,13.0380671,80.2528387
-node,303917501,ICICI Bank,amenity,bank,Elephant Cave Road,,,560011,,,https://www.icicibank.com,12.9331091,77.5835191
-node,303917702,Jayanagar 3rd Block PO,amenity,post_office,,,,,,,,12.9303756,77.583314
-node,303924572,Shanti Hospital,amenity,hospital,,,,,,,,12.9235041,77.5857517
-node,303933809,State Bank of India,amenity,bank,,,,,,,,12.9365346,77.627846
-node,303938132,Bharat Petroleum,amenity,fuel,Elephant Cave Road,,,,,,,12.9365895,77.5804447
-node,304832055,Uday Samudra,tourism,hotel,,,,,,,,8.4014875,76.9724317
-node,304832059,Samudra,tourism,hotel,,,,,,,https://www.ktdc.com/samudra/,8.4001231,76.9728292
-node,304948425,Lala's Cafe,amenity,cafe,,,,,,,,34.1648984,77.586291
-node,304948431,Womens' Association,tourism,information,,,,,,,,34.1680015,77.5869878
-node,304948432,Mahey,tourism,guest_house,,,,,,,,34.1642091,77.5752521
+node,304956888,Green Park - Chennai,tourism,hotel,Arcot Road,Chennai,Tamil Nadu,600026,+91 44 66515151,reserv.chn@hotelgreenpark.com,http://www.hotelgreenpark.com/default.htm,13.051048,80.2081917
+node,305933220,HP,amenity,fuel,,,,,,,,12.9796614,80.218483
+node,306585721,Sukh Sagar,amenity,restaurant,Mahayogi Vemana Road,,,,,,,12.9333646,77.6230728
+node,306588561,Wipro K1 office,office,company,,,,,,,,12.9338273,77.6178775
+node,306604811,pavan cycles,shop,convenience,,,,,,,,9.5210099,76.5248461
+node,306630151,Taj Lake Palace,tourism,hotel,,,,,,lakepalace.udaipur@tajhotels.com,www.tajhotels.com,24.5754426,73.6801244
+node,307369793,Big Bazaar,shop,supermarket,,,,,,,,28.6411763,77.3168413
+node,307395789,Amruth Park Land,amenity,restaurant,,,,,,,,12.8835332,77.7502633
+node,307401529,Apollo Hospital,healthcare,hospital,"74/1, Outer Ring Road","Belandur, Bangalore",Karnataka,560037,+91-80-40222555,whitefield@theapolloclinic.com,http://www.apolloclinicbangalore.com/,12.9263714,77.6765455
+node,307411444,Foodworld,shop,supermarket,,,,,,,,12.9328185,77.5830433
+node,307414664,Canara Bank,amenity,bank,,,,,,,https://www.canarabank.com/,12.9309193,77.5837775
+node,307414683,State Bank of India,amenity,bank,,,,,,,https://www.sbi.co.in,12.9289702,77.5839921
+node,307430812,JK furniture mart;Edamuriyil building,shop,furniture;mall,,,,,,,,9.4348953,76.6096698
+node,307442482,Verka Milk Bar,amenity,fast_food,,,,,,,,30.2898333,75.8337204
+node,307442618,Banasar Bagh,tourism,theme_park,,,,,,,,30.2441729,75.8468099
+node,307442633,Museum,tourism,museum,,,,,,,,30.2459405,75.8468478
+node,307442660,Petrol Pump,amenity,fuel,,,,,,,,30.3277581,75.8445136
+node,307442802,Indian Oil,amenity,fuel,,,,,,,,30.5290986,75.8882206
+node,307442907,Sodi Non-veg Dhaba,amenity,restaurant,,,,,,,,30.6998409,75.8477565
+node,307511109,Aravind Ayurvedic Hospital,amenity,hospital,,,Kerala,689115,,,,9.363999,76.5925769
+node,307968078,Marriage Palace,tourism,hotel,,,,,,,,30.8940629,75.8356827
+node,308194426,Le Royal Meridian,tourism,hotel,,,,,,,,13.0070349,80.2055161
+node,308209449,State Bank of India,amenity,bank,,,,,,,,11.8769919,75.3710979
+node,308210316,Residency Towers,tourism,hotel,,,,,,,,13.0402539,80.2437255
+node,308214432,Highland Hospital,amenity,hospital,,,Karnataka,575002,,,,12.8663995,74.854664
+node,308300959,High Time,amenity,pub,,,,,,,,13.0398535,80.2449822
+node,308300962,Accord Metropolitan,tourism,hotel,,,,,,,,13.0459441,80.2425563
+node,308300964,Courtyard Marriott,tourism,hotel,"564, Anna Salai (Mount Road)",Chennai,,600017,66764000,,https://www.marriott.com/en-us/hotels/maacy-courtyard-chennai/overview/,13.0459725,80.2477447
+node,308305423,Karur Vysya Bank,amenity,bank,,,,,,,https://www.kvb.co.in,13.0464174,80.2479934
+node,308305431,Canara Bank,amenity,bank,,,,,,,https://www.canarabank.com/,13.0454637,80.247755
