@@ -1,31 +1,31 @@
 ﻿osm_type,osm_id,name,category,subcategory,address,city,state,postcode,phone,email,website,latitude,longitude
-node,309614880,Parthas,shop,clothes,,,,,,,,8.4864406,76.9486091
-node,309629939,Pankaj Hotel,tourism,hotel,,,,,+91 471 2464645,,http://www.pankajhotel.com/,8.4958271,76.9479098
-node,309633372,Travancore Heritage Resort,tourism,hotel,,,,,,,,8.3582657,77.0176522
-node,309685866,Taj Hotel,tourism,hotel,,,,,,,,9.6266593,76.4280934
-node,309820760,Grand Palace,tourism,hotel,,,,,,,,12.9477613,80.1378567
-node,309864918,Parvathy Nursing Home,amenity,hospital,,,Tamil Nadu,643001,,,,11.4156645,76.7088458
-node,309910994,Elephants Shelter,tourism,attraction,,,,,,,,8.8183655,76.714644
-node,309912620,House Boats,tourism,attraction,,,,,,,,8.8924697,76.584217
-node,310015097,Military Hospital,amenity,hospital,,,,,,,,13.0194622,80.1972947
-node,310393723,Dr Ganesh Medical and Diabetic Clinic,healthcare,hospital,,,,,,,,12.9129006,77.6419101
-node,310504179,Ambedkar Memorial,tourism,attraction,,,,,,,,13.0193208,80.266984
-node,310504820,"Tamil Nadu Government Dental College & Hospital, Chennai",healthcare,hospital,,,,,,,,13.084889,80.2826483
-node,310732936,Kilpauk Medical College,healthcare,hospital,,,,,,,,13.0785984,80.2433369
-node,310829501,Trident Hilton,tourism,hotel,,,,,,,,12.9935805,80.1862283
-node,310830149,Radisson Blu Hotel,tourism,hotel,,,,,,,,12.9940405,80.1876359
-node,310830860,Shanthi Petrol Station,amenity,fuel,,,,,,,,12.9935494,80.1850866
-node,310909754,Hariharan Hospital,healthcare,hospital,,,Tamil Nadu,600061,,info@hariharanhospitals.com,http://hariharanhospitals.com/,12.9847145,80.1905906
-node,310910945,BM Hospital,healthcare,hospital,5th Main Road,,,,044-22670277,,https://bmhospitals.com/,12.9887616,80.1904116
-node,310981345,Robert Caldwell Statue,tourism,artwork,,,,,,,,13.0668472,80.2846487
-node,310981506,Bharathiyar,tourism,artwork,,,,,,,,13.0619185,80.2831094
-node,310981548,Kannagi,tourism,artwork,,,,,,,,13.0575315,80.282181
-node,310981550,Annie Besant,tourism,artwork,,,,,,,,13.0504233,80.2805333
-node,310981827,Kamarajar,tourism,artwork,,,,,,,,13.0403349,80.2794878
-node,310982030,Thiruvalluvar,tourism,artwork,,,,,,,,13.0401413,80.2681005
-node,310982486,Hotel Clarion,tourism,hotel,Dr Radhakrishnan Salai,Chennai,,,,,,13.0434191,80.2711218
-node,311429396,K.F. Hospital,healthcare,hospital,,,Tamil Nadu,600061,,,,12.973463,80.1841397
-node,311430639,Indian Bank,amenity,bank,,,,,,,https://www.indianbank.in/,12.9806778,80.1869881
-node,311477023,Adarsh Nagar Market,amenity,marketplace,"SCF 266, ADARSH NAGAR",JALANDHAR,,144008,+918908624786,,,31.3303935,75.5626409
-node,311926391,Grey Pelican,amenity,restaurant,,,,,,,,30.1158119,77.2908314
-node,311935808,Ali shaan palace,tourism,hotel,,,,,,,,30.0020919,77.0691727
+node,311937810,Aparna hospital,amenity,hospital,,,,,,,,29.6067647,76.9789582
+node,312000326,Cancer Institute,healthcare,hospital,,,,,,,,13.0061338,80.239884
+node,312011839,Rajaji Memorial,tourism,attraction,,,,,,,,13.0064804,80.2391664
+node,312011926,Bakthavachalam Memorial,tourism,attraction,,,,,,,,13.0067142,80.2362341
+node,312011930,Kamaraj Memorial,tourism,attraction,,,,,,,,13.006922,80.2355846
+node,312013150,Axis Bank,amenity,bank,"13/1, 4th Main Road",Chennai,,600061,1860 500 5555,,https://www.axisbank.com,12.9828378,80.1883166
+node,312013569,Canara Bank,amenity,bank,,,,,,,https://www.canarabank.com/,12.985929,80.1883597
+node,312013803,State Bank of India,amenity,bank,,,,,,,,12.9663937,80.189031
+node,312014001,Indian Bank,amenity,bank,,,,,,,https://www.indianbank.in/,12.9664746,80.1892609
+node,312014190,HDFC Bank,amenity,bank,"5, Sabari Salai",Chennai,,600091,,,,12.9655924,80.1910107
+node,312102918,HP,amenity,fuel,,,,,,,,28.5737882,77.2089741
+node,312503506,Crazy Boys,amenity,restaurant,,,,,,,,12.9606568,77.6385011
+node,312504711,Family Mall,shop,supermarket,,,,,,,,12.9588137,77.6382484
+node,312504777,Spencers Express,shop,supermarket,7th Cross Road,Bangalore,,560071,,,https://www.spencers.in/,12.9591813,77.6382984
+node,312504798,More,shop,supermarket,,,,,,,,12.9595527,77.638381
+node,312504927,Srinidhi Sagar,amenity,fast_food,,,,,,,,12.9593353,77.6385869
+node,312508904,Nandhini,amenity,restaurant,100 Feet Road,,,,,,,12.9619513,77.6419064
+node,312595359,Drapes Avenue,shop,curtain,"279, Inner Ring Road",,,,,,,12.9559416,77.6412371
+node,312595492,Nandhana,amenity,restaurant,,,,,,,,12.9558995,77.6411692
+node,312599850,Domlur Post office,amenity,post_office,,,,,,,,12.9608935,77.6359498
+node,312600161,BWSSB Office,office,government,,,,,,,,12.9612252,77.638419
+node,312686078,Saravanaa Bhavan,amenity,fast_food,"70, North Mada Street",Chennai,,600004,04424615588,,,13.03454,80.2688492
+node,312826501,Adyar Bakery,shop,bakery,,,,,,,,12.9878243,80.2562361
+node,312835604,KFC,amenity,fast_food,100 Feet Road( S K Karim Khan Road),,,,,,,12.9781109,77.6385637
+node,313027868,Sri Ramachandra Medical Centre and Hospital,healthcare,hospital,,,,,,,,13.0380979,80.1428047
+node,313131948,Palmgrove,tourism,hotel,,,,,,,,13.0528514,80.2480182
+node,313135840,HP,amenity,fuel,,,,,,,,13.0534169,80.252032
+node,313775331,Blue Cross of India,amenity,veterinary,,,,,,,,13.0061192,80.2640638
+node,313785040,German Bakery,amenity,cafe,Koregaon Park,Pune,,,,,,18.5396234,73.8873711
+node,313946123,Adyar Ananda Bhavan,amenity,restaurant,,,,,,,,12.9805594,80.1904075
