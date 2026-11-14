@@ -1,31 +1,31 @@
 ﻿osm_type,osm_id,name,category,subcategory,address,city,state,postcode,phone,email,website,latitude,longitude
-node,314081167,Essar,amenity,fuel,,,,,,,,12.5508401,80.1424203
-node,314688253,HP,amenity,fuel,,,,,,,,13.0427775,80.2677547
-node,314705276,Sukh Sagar,amenity,restaurant,,,,,,,,12.9741824,77.5753745
-node,315897109,Barathi Hostel,tourism,hotel,,,,,,,,13.0575776,80.2630724
-node,316483286,Cauvery Arts And Crafts Emporium,shop,craft,M G Road,,,,,,,12.9748429,77.608086
-node,316995046,Ashwin Pharma,amenity,pharmacy,HAL Airport Road,,,,,,,12.9600171,77.6454021
-node,316999234,Simply Native,amenity,restaurant,Paramahansa Yogananda Road,,,,,,,12.9651393,77.6383211
-node,316999364,Subway,amenity,fast_food,Indiranagar Double Road,,,,,,,12.9637134,77.6403936
-node,316999477,Apollo Pharmacy,healthcare,pharmacy,,,,,,,,12.9686175,77.6489441
-node,317119985,Adyar Ananda Bhavan,shop,confectionery,,,,,,,,12.9543746,77.5930172
-node,317759267,Shilpa Kala Vedika,tourism,attraction,,,,,,,,17.4513921,78.3792883
-node,317759720,Shilparamam Crafts Village,tourism,attraction,,,,,,,,17.4526547,78.3779737
-node,317821274,HP,amenity,fuel,,,,,,,,13.0184727,80.2614032
-node,318924022,J C Resort,tourism,hotel,,,,,,,,31.3257081,75.6148682
-node,318933695,Petrol Pump,amenity,fuel,,,,,,,,30.9412387,75.8345718
-node,319038955,Indian Oil,amenity,fuel,,,,,,,,13.0421221,80.2684202
-node,319781245,George V,tourism,artwork,,,,,,,,13.0883866,80.2820421
-node,320275820,Govt Maternity Hospital,healthcare,hospital,,,,,,,,13.0720996,80.2589871
-node,320275824,Institute of Child Health,healthcare,hospital,,,,,,,,13.0735496,80.257025
-node,320275839,Institute of Obstetrics and Gynaecology dd,healthcare,hospital,,,,,,,,13.0735431,80.2591463
-node,320647357,Chickpet Cross,tourism,attraction,,,,,,,,12.9680027,77.578642
-node,321416009,Bison Point,tourism,viewpoint,,,,,,,,11.4967864,76.6893907
-node,321417442,Bandipur Reception Center,tourism,information,,,,,,,,11.6672789,76.6286324
-node,321417496,Moyar Gorge,tourism,viewpoint,,,,,,,,11.6161121,76.631118
-node,321418342,Vijaya Bank Ooty Branch,amenity,bank,,,,,,,,11.4112711,76.7077556
-node,321418345,Hotel Nahar,tourism,hotel,,,,,,,,11.4080347,76.7085499
-node,321420712,Indian Oil,amenity,fuel,,,,,,,,11.2164596,77.0850864
-node,321420714,Indian Oil,amenity,fuel,,,,,,,,11.1273864,77.0303319
-node,321420720,HP,amenity,fuel,,,,,,,,11.08003,77.0042231
-node,321420726,Reliance Fresh,shop,supermarket,,,,,,,,11.0787956,77.0040591
+node,321420756,Karur Vysya Bank,amenity,bank,,,,,,,https://www.kvb.co.in,11.0415163,76.9826001
+node,321420762,Indian Oil,amenity,fuel,,,,,,,,11.039519,76.9805839
+node,321420767,Ellen Multispeciality Hospital,healthcare,hospital,,,,,,,,11.0213634,76.9708723
+node,321420772,GP Hospital,healthcare,hospital,,,,,,,,11.0201233,76.9710726
+node,321420778,HP,amenity,fuel,,,,,,,,11.0153511,76.9676319
+node,321420784,TTDC Hotel Tamil Nadu Coimbatore,tourism,hotel,,,,,096400 65819; 1800 4253 1111; 044 2533 3113,support@ttdconline.com,https://ttdconline.com/,11.0136119,76.9684019
+node,321420789,BP,amenity,fuel,,,,,,,,11.012646,76.9673432
+node,321420801,Punjab National Bank,amenity,bank,,,,,,,https://www.pnbindia.in,11.0113022,76.9667545
+node,321420807,Punjab National Bank,amenity,bank,,,,,,,https://www.pnbindia.in,11.0112887,76.9672054
+node,321420815,Hotel Alankar,tourism,hotel,,,,,,,,11.009903,76.9661668
+node,321420821,Heritage Inn,tourism,hotel,,,,,,,,11.0104497,76.9668505
+node,321420827,Hotel City Tower,tourism,hotel,,,,,,,,11.0104805,76.9664184
+node,321420833,Arunn Surgery,healthcare,clinic,,,Tamil Nadu,641018,,,,11.0110912,76.9671438
+node,321504325,Nilgiri's,shop,supermarket,,,,,,,,13.005869,80.2518431
+node,321504330,Pizza Hut,amenity,restaurant,,,,,,,,13.0055904,80.251822
+node,321506493,Cafe Coffee Day,amenity,cafe,,,,,,,,12.9998739,80.2518509
+node,321712773,Bharat Petrol Pump,amenity,fuel,,,,,,,,17.4272158,78.5310796
+node,321712774,Tarnaka Agencies Petrol Pump,amenity,fuel,,,,,,,,17.4267938,78.5314488
+node,321714693,post office,amenity,post_office,,,,,,,,17.4202457,78.5255931
+node,321831793,Periyar,tourism,artwork,,,,,,,,13.0715749,80.2743534
+node,323638044,TVS Sundaram Motors,shop,car,"107, Kasturba Road",Bangalore,,560 001,+91-80-22070713;+91-80-22070709,salesgmblr@sundarammotors.com,https://www.sundarammotors.com/,12.9737535,77.5959935
+node,324219348,J&K Bank ATM,amenity,bank,,,,,,,,34.0544544,74.3996155
+node,324219349,Kingsley,tourism,hotel,,,,,,,,34.0545705,74.3993508
+node,324219350,Affarwat,tourism,hotel,,,,,,,,34.055738,74.4014527
+node,324219351,Hotel Park Royal,tourism,hotel,,,,,,,,34.0571896,74.4018803
+node,324219392,Coffee stall,amenity,cafe,,,,,,,,34.0182672,74.3458683
+node,324219399,C,tourism,viewpoint,,,,,,,,34.0168294,74.3472884
+node,324834915,Taj Tristar,tourism,hotel,,,,,,,,17.4414402,78.4935002
+node,324863709,Boys Hostel,tourism,hostel,,,,,,,,17.4216104,78.5266507
+node,324865364,State Bank of India,amenity,bank,,,,,,,https://www.sbi.co.in,17.4192999,78.5267548
