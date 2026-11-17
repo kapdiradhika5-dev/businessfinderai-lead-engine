@@ -4,22 +4,26 @@ import json
 import os
 import re
 import time
-import socket
 import urllib.request
 import urllib.parse
 import urllib.robotparser
 from html.parser import HTMLParser
 from urllib.parse import urljoin, urlparse
+from urllib.error import HTTPError
 
 import dns.resolver
 
 
 LIMIT = 30
+MAX_CANDIDATES = 100
+
 SOUTH, WEST, NORTH, EAST = 22.90, 72.40, 23.20, 72.80
 
 HISTORY = "seen_businesses.txt"
 OUTPUT = "business_leads.csv"
 PUBLIC_OUTPUT = "public_leads.csv"
+
+USER_AGENT = "BusinessFinderAI/1.0 (public business contact discovery)"
 
 FIELDS = [
     "osm_id", "name", "category", "subcategory",
@@ -34,8 +38,6 @@ AMENITIES = (
     "dentist|veterinary|car_repair|car_wash|fuel|"
     "beauty_salon|marketplace|coworking_space"
 )
-
-USER_AGENT = "BusinessFinderAI/1.0 (public business contact discovery)"
 
 
 def get_tag(tags, *keys):
@@ -69,11 +71,15 @@ def get_osm_data():
 
     for server in servers:
         try:
-            print("Trying:", server)
+            print("Trying OSM server:", server)
+
+            body = urllib.parse.urlencode(
+                {"data": query}
+            ).encode("utf-8")
 
             request = urllib.request.Request(
                 server,
-                data=query.encode("utf-8"),
+                data=body,
                 headers={
                     "User-Agent": USER_AGENT,
                     "Content-Type": "application/x-www-form-urlencoded"
@@ -81,7 +87,9 @@ def get_osm_data():
             )
 
             with urllib.request.urlopen(request, timeout=180) as response:
-                return json.loads(response.read().decode("utf-8"))
+                return json.loads(
+                    response.read().decode("utf-8")
+                )
 
         except Exception as error:
             print("OSM server error:", error)
@@ -132,7 +140,9 @@ def extract_osm_businesses(data, seen):
             get_tag(tags, "addr:suburb")
         ]
 
-        address = ", ".join(x for x in address_parts if x)
+        address = ", ".join(
+            part for part in address_parts if part
+        )
 
         website = get_tag(
             tags, "website", "contact:website", "url"
@@ -165,7 +175,8 @@ def extract_osm_businesses(data, seen):
             "latitude": latitude,
             "longitude": longitude,
             "osm_url": (
-                f'https://www.openstreetmap.org/{item["type"]}/{item["id"]}'
+                f'https://www.openstreetmap.org/'
+                f'{item["type"]}/{item["id"]}'
             )
         })
 
@@ -180,7 +191,6 @@ class ContactParser(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
-
         href = attrs.get("href", "").strip()
 
         if href.lower().startswith("mailto:"):
@@ -194,16 +204,20 @@ class ContactParser(HTMLParser):
                 self.phones.add(phone)
 
     def handle_data(self, data):
-        for email in re.findall(
+        email_list = re.findall(
             r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
             data
-        ):
+        )
+
+        for email in email_list:
             self.emails.add(email)
 
-        for phone in re.findall(
+        phone_list = re.findall(
             r"(?:\+91[\s-]?)?[6-9]\d{9}",
             data
-        ):
+        )
+
+        for phone in phone_list:
             self.phones.add(phone)
 
 
@@ -234,18 +248,30 @@ def get_robots_parser(base_url):
     parser = urllib.robotparser.RobotFileParser()
     parser.set_url(robots_url)
 
+    request = urllib.request.Request(
+        robots_url,
+        headers={"User-Agent": USER_AGENT}
+    )
+
     try:
-        request = urllib.request.Request(
-            robots_url, headers={"User-Agent": USER_AGENT}
-        )
-
         with urllib.request.urlopen(request, timeout=10) as response:
-            parser.parse(response.read().decode("utf-8", errors="ignore").splitlines())
+            lines = response.read().decode(
+                "utf-8", errors="ignore"
+            ).splitlines()
 
-        return parser
+            parser.parse(lines)
+            return parser
+
+    except HTTPError as error:
+        # A missing robots.txt (404) means no published rules.
+        if error.code == 404:
+            parser.parse([])
+            return parser
+
+        return None
 
     except Exception:
-        # If robots.txt cannot be checked, do not crawl the site.
+        # If robots.txt cannot be checked, skip the website.
         return None
 
 
@@ -335,13 +361,16 @@ def enrich_business(business):
             if business["phone"] and business["email"]:
                 break
 
-            time.sleep(1)
+            time.sleep(0.5)
 
         except Exception as error:
             print("Page skipped:", page_url, error)
 
     if business["email"]:
-        business["email_status"] = "MX record found"
+        if valid_email_domain(business["email"]):
+            business["email_status"] = "MX record found"
+        else:
+            business["email_status"] = "MX record not found"
     else:
         business["email_status"] = "Not found"
 
@@ -377,28 +406,84 @@ def score_business(business):
     return business
 
 
+def read_csv_file(filename):
+    records = {}
+
+    if not os.path.exists(filename):
+        return records
+
+    try:
+        with open(
+            filename, newline="", encoding="utf-8-sig"
+        ) as file:
+            reader = csv.DictReader(file)
+
+            for row in reader:
+                osm_id = row.get("osm_id", "").strip()
+
+                if osm_id:
+                    records[osm_id] = row
+
+    except Exception as error:
+        print("CSV read error:", error)
+
+    return records
+
+
+def write_csv_file(filename, records):
+    with open(
+        filename, "w", newline="", encoding="utf-8-sig"
+    ) as file:
+        writer = csv.DictWriter(
+            file,
+            fieldnames=FIELDS,
+            extrasaction="ignore"
+        )
+
+        writer.writeheader()
+
+        for record in records:
+            writer.writerow({
+                field: record.get(field, "")
+                for field in FIELDS
+            })
+
+
 def main():
     if os.path.exists(HISTORY):
         with open(HISTORY, encoding="utf-8") as file:
-            seen = set(x.strip() for x in file if x.strip())
+            seen = set(
+                line.strip()
+                for line in file
+                if line.strip()
+            )
     else:
         seen = set()
 
     print("Downloading Ahmedabad OSM records...")
-    data = get_osm_data()
 
+    data = get_osm_data()
     businesses = extract_osm_businesses(data, seen)
 
     print("New businesses found:", len(businesses))
 
+    # Check businesses that already have contact information first.
+    businesses.sort(
+        key=lambda item: (
+            0 if item["phone"] and item["email"]
+            else 1 if item["phone"] or item["email"]
+            else 2,
+            item["name"].lower()
+        )
+    )
+
+    candidates = businesses[:MAX_CANDIDATES]
     enriched = []
 
-    for index, business in enumerate(businesses, start=1):
-        if len(enriched) >= LIMIT:
-            break
-
+    for index, business in enumerate(candidates, start=1):
         print(
-            f'Checking {index}: {business["name"]}'
+            f'Checking {index}/{len(candidates)}: '
+            f'{business["name"]}'
         )
 
         business = enrich_business(business)
@@ -407,61 +492,72 @@ def main():
         enriched.append(business)
 
         # Be polite to public websites.
-        time.sleep(1)
+        time.sleep(0.5)
 
     # Both contacts first, then one contact, then no contacts.
     enriched.sort(
-        key=lambda x: (
-            0 if x["contact_priority"] == "Phone + Email"
-            else 1 if x["contact_priority"] == "One contact"
+        key=lambda item: (
+            0 if item["contact_priority"] == "Phone + Email"
+            else 1 if item["contact_priority"] == "One contact"
             else 2,
-            -x["lead_score"],
-            x["name"].lower()
+            -int(item["lead_score"]),
+            item["name"].lower()
         )
     )
 
-    with open(
-        OUTPUT, "w", newline="", encoding="utf-8-sig"
-    ) as file:
-        writer = csv.DictWriter(file, fieldnames=FIELDS)
-        writer.writeheader()
-        writer.writerows(enriched)
+    selected = enriched[:LIMIT]
 
-    # Keep all exported IDs in duplicate history.
-    seen.update(x["osm_id"] for x in enriched)
+    # Save today's new leads.
+    write_csv_file(OUTPUT, selected)
+
+    # Only exported leads are added to duplicate history.
+    seen.update(item["osm_id"] for item in selected)
 
     with open(HISTORY, "w", encoding="utf-8") as file:
         for item in sorted(seen):
             file.write(item + "\n")
 
-    with open(
-        PUBLIC_OUTPUT, "w", newline="", encoding="utf-8-sig"
-    ) as file:
-        writer = csv.DictWriter(file, fieldnames=FIELDS)
-        writer.writeheader()
-        writer.writerows(enriched)
+    # Keep old dashboard leads and add today's new leads.
+    old_records = read_csv_file(PUBLIC_OUTPUT)
+
+    for item in selected:
+        old_records[item["osm_id"]] = item
+
+    all_records = list(old_records.values())
+
+    all_records.sort(
+        key=lambda item: (
+            0 if item.get("contact_priority") == "Phone + Email"
+            else 1 if item.get("contact_priority") == "One contact"
+            else 2,
+            item.get("name", "").lower()
+        )
+    )
+
+    write_csv_file(PUBLIC_OUTPUT, all_records)
 
     both = sum(
-        1 for x in enriched
-        if x["contact_priority"] == "Phone + Email"
+        1 for item in selected
+        if item["contact_priority"] == "Phone + Email"
     )
 
     one = sum(
-        1 for x in enriched
-        if x["contact_priority"] == "One contact"
+        1 for item in selected
+        if item["contact_priority"] == "One contact"
     )
 
     none = sum(
-        1 for x in enriched
-        if x["contact_priority"] == "No contact"
+        1 for item in selected
+        if item["contact_priority"] == "No contact"
     )
 
     print("--------------------------------")
     print("Ahmedabad Lead Report")
-    print("Total exported:", len(enriched))
+    print("Total exported:", len(selected))
     print("Phone + Email:", both)
     print("One contact:", one)
     print("No contact:", none)
+    print("Total dashboard leads:", len(all_records))
     print("--------------------------------")
 
 
