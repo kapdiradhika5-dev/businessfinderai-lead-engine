@@ -33,13 +33,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
+ 
       - name: Download India OpenStreetMap data
         run: |
           curl --fail --location \
-            --retry 3 \
-            --retry-delay 10 \
-            --connect-timeout 30 \
+            --retry 5 \
+            --retry-all-errors \
+            --retry-connrefused \
+            --retry-delay 15 \
+            --connect-timeout 60 \
+            --max-time 1800 \
             -o india-latest.osm.pbf \
             https://download.geofabrik.de/asia/india-latest.osm.pbf
 
