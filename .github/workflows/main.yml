@@ -44,7 +44,7 @@ jobs:
             https://download.geofabrik.de/asia/india-latest.osm.pbf
 
       - name: Run BusinessFinderAI
-        run: python src/lead_engine.py
+        run: python -u src/lead_engine.py
 
       - name: Save leads and duplicate history
         run: |
