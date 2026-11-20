@@ -3,16 +3,18 @@ import csv
 import json
 import os
 import re
+import random
 import time
 import urllib.request
 import urllib.parse
 import urllib.robotparser
-
+from datetime import date
 from html.parser import HTMLParser
 from urllib.parse import urljoin, urlparse
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 
 import dns.resolver
+import osmium
 
 
 # --------------------------------------------------
@@ -21,12 +23,13 @@ import dns.resolver
 
 LIMIT = 30
 MAX_CANDIDATES = 150
+PBF_FILE = "india-latest.osm.pbf"
 
 HISTORY = "seen_businesses.txt"
 OUTPUT = "business_leads.csv"
 PUBLIC_OUTPUT = "public_leads.csv"
 
-USER_AGENT = "BusinessFinderAI/1.0 (public business contact discovery)"
+USER_AGENT = "BusinessFinderAI/1.0 (business contact discovery)"
 
 FIELDS = [
     "osm_id", "name", "category", "subcategory",
@@ -36,751 +39,525 @@ FIELDS = [
     "latitude", "longitude", "osm_url"
 ]
 
-AMENITIES = (
-    "restaurant|cafe|fast_food|bank|pharmacy|clinic|"
-    "dentist|veterinary|car_repair|car_wash|fuel|"
-    "beauty_salon|marketplace|coworking_space"
-)
+AMENITY_VALUES = {
+    "restaurant", "cafe", "fast_food", "bank",
+    "pharmacy", "clinic", "doctors", "dentist",
+    "veterinary", "car_repair", "car_wash", "fuel",
+    "beauty_salon", "marketplace", "coworking_space",
+    "hospital", "hotel", "school", "college",
+    "gym", "bar", "pub", "laundry",
+    "travel_agency", "car_rental"
+}
 
 MX_CACHE = {}
 
 
 # --------------------------------------------------
-# COMMON FUNCTIONS
+# BASIC HELPERS
 # --------------------------------------------------
 
-def get_tag(tags, *keys):
+def clean(value):
+    return str(value or "").strip()
 
-    for key in keys:
 
-        value = tags.get(key, "").strip()
+def load_history():
+    if not os.path.exists(HISTORY):
+        return set()
 
-        if value:
-            return value
+    with open(HISTORY, "r", encoding="utf-8") as file:
+        return {line.strip() for line in file if line.strip()}
 
-    return ""
 
+def save_history(seen_ids):
+    with open(HISTORY, "w", encoding="utf-8") as file:
+        for item in sorted(seen_ids):
+            file.write(item + "\n")
 
-# --------------------------------------------------
-# 1. GET AHMEDABAD OSM DATA
-# --------------------------------------------------
 
-def get_osm_data():
-
-    query = f"""
-    [out:json][timeout:180];
-
-    rel
-      ["boundary"="administrative"]
-      ["name"~"^Ahmedabad$",i]
-      ["admin_level"="8"];
-
-    map_to_area->.ahmedabad;
-
-    (
-      nwr(area.ahmedabad)["shop"];
-      nwr(area.ahmedabad)["office"];
-      nwr(area.ahmedabad)["craft"];
-      nwr(area.ahmedabad)["healthcare"];
-      nwr(area.ahmedabad)["amenity"~"^({AMENITIES})$"];
-    );
-
-    out center tags;
-    """
-
-    servers = [
-        "https://overpass.private.coffee/api/interpreter",
-        "https://overpass-api.de/api/interpreter"
-    ]
-
-    for server in servers:
-
-        try:
-
-            print("Trying OSM server:", server)
-
-            body = urllib.parse.urlencode(
-                {"data": query}
-            ).encode("utf-8")
-
-            request = urllib.request.Request(
-                server,
-                data=body,
-                headers={
-                    "User-Agent": USER_AGENT,
-                    "Content-Type": "application/x-www-form-urlencoded"
-                }
-            )
-
-            with urllib.request.urlopen(
-                request, timeout=210
-            ) as response:
-
-                data = json.loads(
-                    response.read().decode("utf-8")
-                )
-
-                if not data.get("elements"):
-
-                    raise RuntimeError(
-                        "No businesses found. "
-                        "Ahmedabad boundary may not match this query."
-                    )
-
-                print(
-                    "OSM records received:",
-                    len(data["elements"])
-                )
-
-                return data
-
-        except Exception as error:
-
-            print("OSM server error:", error)
-            print("Trying next server...")
-
-            time.sleep(5)
-
-    raise RuntimeError(
-        "All Overpass servers failed. "
-        "No leads were exported."
-    )
-
-
-# --------------------------------------------------
-# 2. EXTRACT BUSINESS DETAILS
-# --------------------------------------------------
-
-def extract_osm_businesses(data, seen):
-
-    businesses = []
-
-    for item in data.get("elements", []):
-
-        tags = item.get("tags", {})
-
-        name = get_tag(tags, "name", "name:en")
-
-        if not name:
-            continue
-
-        category = ""
-        subcategory = ""
-
-        for key in (
-            "shop", "office", "craft", "healthcare", "amenity"
-        ):
-
-            if tags.get(key):
-
-                category = key
-                subcategory = tags[key]
-                break
-
-        if not category:
-            continue
-
-        if category == "office" and subcategory in (
-            "government", "political_party"
-        ):
-            continue
-
-        osm_id = f'{item["type"]}/{item["id"]}'
-
-        if osm_id in seen:
-            continue
-
-        center = item.get("center", {})
-
-        latitude = item.get(
-            "lat", center.get("lat", "")
-        )
-
-        longitude = item.get(
-            "lon", center.get("lon", "")
-        )
-
-        address_parts = [
-            get_tag(tags, "addr:housenumber"),
-            get_tag(tags, "addr:street"),
-            get_tag(tags, "addr:suburb")
-        ]
-
-        address = ", ".join(
-            part for part in address_parts if part
-        )
-
-        phone = get_tag(
-            tags, "phone", "contact:phone", "mobile"
-        )
-
-        email = get_tag(
-            tags, "email", "contact:email"
-        )
-
-        website = get_tag(
-            tags, "website", "contact:website", "url"
-        )
-
-        businesses.append({
-
-            "osm_id": osm_id,
-            "name": name,
-            "category": category,
-            "subcategory": subcategory,
-            "address": address,
-            "city": "Ahmedabad",
-            "state": get_tag(tags, "addr:state") or "Gujarat",
-            "phone": phone,
-            "email": email,
-            "website": website,
-
-            "phone_source": "OpenStreetMap" if phone else "",
-            "email_source": "OpenStreetMap" if email else "",
-
-            "email_status": "Not checked",
-
-            "latitude": latitude,
-            "longitude": longitude,
-
-            "osm_url": (
-                f'https://www.openstreetmap.org/'
-                f'{item["type"]}/{item["id"]}'
-            )
-        })
-
-    return businesses
-
-
-# --------------------------------------------------
-# 3. VALIDATE INDIAN PHONE NUMBERS
-# --------------------------------------------------
-
-def normalize_phone(phone):
-
-    if not phone:
-        return ""
-
-    phone = str(phone).strip()
-
-    if phone.startswith("+") and not phone.startswith("+91"):
-        return ""
-
-    digits = re.sub(r"\D", "", phone)
+def normalize_phone(value):
+    digits = re.sub(r"\D", "", clean(value))
 
     if digits.startswith("0091"):
         digits = digits[4:]
-
-    elif digits.startswith("91") and len(digits) == 12:
+    elif digits.startswith("91") and len(digits) > 10:
         digits = digits[2:]
-
-    if digits.startswith("0") and len(digits) in (11, 12):
+    elif digits.startswith("0") and len(digits) == 11:
         digits = digits[1:]
 
-    # Indian mobile number
     if len(digits) == 10 and digits[0] in "6789":
         return "+91" + digits
 
-    # Indian landline number
-    if len(digits) == 10 and digits[0] in "2345":
-        return "+91" + digits
-
     return ""
 
 
-def clean_phone(phone):
+def normalize_website(value):
+    value = clean(value)
 
-    if not phone:
+    if not value:
         return ""
 
-    parts = re.split(r"[;,/|]", str(phone))
+    if not value.startswith(("http://", "https://")):
+        value = "https://" + value
 
-    for part in parts:
+    parsed = urlparse(value)
 
-        valid = normalize_phone(part)
-
-        if valid:
-            return valid
-
-    return ""
-
-
-# --------------------------------------------------
-# 4. WEBSITE CONTACT PARSER
-# --------------------------------------------------
-
-class ContactParser(HTMLParser):
-
-    def __init__(self):
-
-        super().__init__()
-
-        self.phones = set()
-        self.emails = set()
-
-    def handle_starttag(self, tag, attrs):
-
-        attrs = dict(attrs)
-
-        href = attrs.get("href", "").strip()
-
-        if href.lower().startswith("mailto:"):
-
-            email = href[7:].split("?")[0].strip()
-
-            if email:
-                self.emails.add(email)
-
-        if href.lower().startswith("tel:"):
-
-            phone = href[4:].strip()
-
-            if phone:
-                self.phones.add(phone)
-
-    def handle_data(self, data):
-
-        emails = re.findall(
-            r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
-            data
-        )
-
-        for email in emails:
-            self.emails.add(email)
-
-        phones = re.findall(
-            r"(?:\+?91[\s().-]*)?(?:0[\s().-]*)?"
-            r"(?:[6-9](?:[\s().-]*\d){9}|"
-            r"[2-5](?:[\s().-]*\d){9})",
-            data
-        )
-
-        for phone in phones:
-            self.phones.add(phone)
-
-
-# --------------------------------------------------
-# 5. NORMALIZE WEBSITE
-# --------------------------------------------------
-
-def normalize_website(url):
-
-    if not url:
+    if not parsed.netloc or "." not in parsed.netloc:
         return ""
 
-    url = url.strip()
+    return value.rstrip("/")
 
-    if not url.startswith(("http://", "https://")):
-        url = "https://" + url
-
-    parsed = urlparse(url)
-
-    if not parsed.hostname:
-        return ""
-
-    if parsed.scheme not in ("http", "https"):
-        return ""
-
-    return url
-
-
-# --------------------------------------------------
-# 6. CHECK ROBOTS.TXT
-# --------------------------------------------------
-
-def get_robots_parser(base_url):
-
-    parsed = urlparse(base_url)
-
-    robots_url = (
-        f"{parsed.scheme}://{parsed.netloc}/robots.txt"
-    )
-
-    parser = urllib.robotparser.RobotFileParser()
-
-    parser.set_url(robots_url)
-
-    request = urllib.request.Request(
-        robots_url,
-        headers={"User-Agent": USER_AGENT}
-    )
-
-    try:
-
-        with urllib.request.urlopen(
-            request, timeout=10
-        ) as response:
-
-            lines = response.read().decode(
-                "utf-8", errors="ignore"
-            ).splitlines()
-
-            parser.parse(lines)
-
-            return parser
-
-    except HTTPError as error:
-
-        if error.code == 404:
-
-            parser.parse([])
-
-            return parser
-
-        return None
-
-    except Exception:
-
-        return None
-
-
-# --------------------------------------------------
-# 7. FETCH WEBSITE PAGE
-# --------------------------------------------------
-
-def fetch_page(url):
-
-    request = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": USER_AGENT,
-            "Accept": "text/html"
-        }
-    )
-
-    with urllib.request.urlopen(
-        request, timeout=12
-    ) as response:
-
-        content_type = response.headers.get(
-            "Content-Type", ""
-        )
-
-        if "text/html" not in content_type.lower():
-            return ""
-
-        return response.read(500000).decode(
-            "utf-8", errors="ignore"
-        )
-
-
-# --------------------------------------------------
-# 8. VALIDATE EMAIL
-# --------------------------------------------------
 
 def valid_email_domain(email):
+    email = clean(email).lower()
 
-    email = email.strip().lower()
-
-    if not re.fullmatch(
-        r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
-        email
-    ):
+    if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
         return False
 
-    domain = email.rsplit("@", 1)[1]
+    domain = email.split("@")[-1]
 
     if domain in MX_CACHE:
         return MX_CACHE[domain]
 
     try:
-
-        dns.resolver.resolve(domain, "MX")
-
+        dns.resolver.resolve(domain, "MX", lifetime=4)
         MX_CACHE[domain] = True
-
-        return True
-
     except Exception:
-
         MX_CACHE[domain] = False
 
+    return MX_CACHE[domain]
+
+
+# --------------------------------------------------
+# OSM DATA EXTRACTION
+# --------------------------------------------------
+
+def get_category(tags):
+    for key in ("shop", "office", "craft", "healthcare", "amenity", "tourism"):
+        value = clean(tags.get(key))
+
+        if not value or value in ("yes", "no"):
+            continue
+
+        if key == "amenity" and value not in AMENITY_VALUES:
+            continue
+
+        return key, value
+
+    return "", ""
+
+
+def get_address(tags):
+    parts = []
+
+    full = clean(tags.get("addr:full"))
+    if full:
+        return full
+
+    for key in (
+        "addr:housenumber",
+        "addr:street",
+        "addr:suburb",
+        "addr:neighbourhood",
+        "addr:postcode"
+    ):
+        value = clean(tags.get(key))
+        if value:
+            parts.append(value)
+
+    return ", ".join(parts)
+
+
+def get_coordinates(obj):
+    try:
+        if hasattr(obj, "location"):
+            location = obj.location
+
+            if location.valid():
+                return location.lat, location.lon
+
+        if hasattr(obj, "nodes"):
+            latitudes = []
+            longitudes = []
+
+            for node in obj.nodes:
+                if node.location.valid():
+                    latitudes.append(node.lat)
+                    longitudes.append(node.lon)
+
+            if latitudes:
+                return (
+                    sum(latitudes) / len(latitudes),
+                    sum(longitudes) / len(longitudes)
+                )
+
+    except Exception:
+        pass
+
+    return "", ""
+
+
+class IndiaBusinessHandler(osmium.SimpleHandler):
+
+    def __init__(self, seen):
+        super().__init__()
+        self.seen = seen
+        self.candidates = []
+        self.total_found = 0
+        self.randomizer = random.Random(date.today().isoformat())
+
+    def process_business(self, obj, object_type):
+        tags = obj.tags
+
+        name = clean(tags.get("name"))
+        if not name:
+            return
+
+        category, subcategory = get_category(tags)
+        if not category:
+            return
+
+        osm_id = f"{object_type}/{obj.id}"
+
+        if osm_id in self.seen:
+            return
+
+        lat, lon = get_coordinates(obj)
+
+        if lat == "" or lon == "":
+            return
+
+        self.total_found += 1
+
+        phone = normalize_phone(
+            tags.get("contact:phone") or tags.get("phone")
+        )
+
+        email = clean(
+            tags.get("contact:email") or tags.get("email")
+        ).lower()
+
+        website = normalize_website(
+            tags.get("contact:website") or tags.get("website")
+        )
+
+        row = {
+            "osm_id": osm_id,
+            "name": name,
+            "category": category,
+            "subcategory": subcategory,
+            "address": get_address(tags),
+            "city": clean(tags.get("addr:city") or tags.get("addr:district")),
+            "state": clean(tags.get("addr:state")),
+            "phone": phone,
+            "email": email,
+            "website": website,
+            "phone_source": "OpenStreetMap" if phone else "",
+            "email_source": "OpenStreetMap" if email else "",
+            "email_status": "",
+            "contact_priority": "",
+            "lead_score": 0,
+            "latitude": lat,
+            "longitude": lon,
+            "osm_url": f"https://www.openstreetmap.org/{object_type}/{obj.id}"
+        }
+
+        # Reservoir sampling: India na alag-alag areas mathi sample
+        if len(self.candidates) < MAX_CANDIDATES:
+            self.candidates.append(row)
+        else:
+            position = self.randomizer.randint(1, self.total_found)
+
+            if position <= MAX_CANDIDATES:
+                self.candidates[position - 1] = row
+
+    def node(self, obj):
+        self.process_business(obj, "node")
+
+    def way(self, obj):
+        self.process_business(obj, "way")
+
+
+def get_osm_data(seen):
+    if not os.path.exists(PBF_FILE):
+        raise FileNotFoundError(
+            "India PBF file not found. Workflow ma download step check karo."
+        )
+
+    print("Reading India-wide OpenStreetMap data...")
+
+    handler = IndiaBusinessHandler(seen)
+
+    handler.apply_file(
+        PBF_FILE,
+        locations=True,
+        idx="dense_mmap_array"
+    )
+
+    print("Total new businesses found:", handler.total_found)
+    print("Sampled businesses:", len(handler.candidates))
+
+    return handler.candidates
+
+
+# --------------------------------------------------
+# WEBSITE CONTACT FINDER
+# --------------------------------------------------
+
+class ContactParser(HTMLParser):
+
+    def __init__(self):
+        super().__init__()
+        self.emails = set()
+        self.phones = set()
+        self.links = set()
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+
+        href = clean(attrs.get("href"))
+
+        if tag == "a" and href:
+            if href.startswith("mailto:"):
+                self.emails.add(href[7:].split("?")[0])
+
+            elif href.startswith("tel:"):
+                self.phones.add(href[4:])
+
+            else:
+                self.links.add(href)
+
+    def handle_data(self, data):
+        text = clean(data)
+
+        for email in re.findall(
+            r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
+            text
+        ):
+            self.emails.add(email)
+
+        for phone in re.findall(
+            r"(?:\+91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}",
+            text
+        ):
+            self.phones.add(phone)
+
+
+def fetch_page(url):
+    try:
+        request = urllib.request.Request(
+            url,
+            headers={"User-Agent": USER_AGENT}
+        )
+
+        with urllib.request.urlopen(request, timeout=7) as response:
+            content_type = response.headers.get("Content-Type", "")
+
+            if "text/html" not in content_type.lower():
+                return ""
+
+            return response.read(350000).decode(
+                "utf-8", errors="ignore"
+            )
+
+    except Exception:
+        return ""
+
+
+def can_visit_website(base_url, page_url):
+    try:
+        robots_url = urljoin(base_url + "/", "robots.txt")
+
+        request = urllib.request.Request(
+            robots_url,
+            headers={"User-Agent": USER_AGENT}
+        )
+
+        with urllib.request.urlopen(request, timeout=5) as response:
+            robots_text = response.read(100000).decode(
+                "utf-8", errors="ignore"
+            )
+
+        parser = urllib.robotparser.RobotFileParser()
+        parser.set_url(robots_url)
+        parser.parse(robots_text.splitlines())
+
+        return parser.can_fetch(USER_AGENT, page_url)
+
+    except HTTPError as error:
+        if error.code == 404:
+            return True
+        return False
+
+    except Exception:
         return False
 
 
-# --------------------------------------------------
-# 9. ENRICH BUSINESS CONTACT DETAILS
-# --------------------------------------------------
+def enrich_business(row):
+    row["phone"] = normalize_phone(row["phone"])
+    row["email"] = clean(row["email"]).lower()
 
-def enrich_business(business):
+    if row["email"]:
+        if valid_email_domain(row["email"]):
+            row["email_status"] = "MX valid"
+        else:
+            row["email"] = ""
+            row["email_status"] = "Invalid or no MX"
 
-    business["phone"] = clean_phone(
-        business["phone"]
-    )
-
-    if business["email"]:
-
-        business["email"] = business["email"].strip().lower()
-
-        if not valid_email_domain(business["email"]):
-
-            business["email"] = ""
-            business["email_source"] = ""
-
-    website = normalize_website(
-        business["website"]
-    )
+    website = row["website"]
 
     if not website:
+        return row
 
-        business["website"] = ""
+    pages_to_check = [website]
 
-        business["email_status"] = (
-            "MX record found"
-            if business["email"]
-            else "No website found"
-        )
+    homepage = fetch_page(website)
 
-        return business
+    if homepage:
+        parser = ContactParser()
+        parser.feed(homepage)
 
-    business["website"] = website
+        for link in parser.links:
+            text = link.lower()
 
-    robots = get_robots_parser(website)
+            if any(word in text for word in (
+                "contact", "about", "support"
+            )):
+                full_url = urljoin(website + "/", link)
 
-    if robots is None:
+                if urlparse(full_url).netloc == urlparse(website).netloc:
+                    pages_to_check.append(full_url)
 
-        business["email_status"] = (
-            "MX record found"
-            if business["email"]
-            else "Robots check unavailable"
-        )
+    # Maximum 2 pages per business
+    for page_url in pages_to_check[:2]:
 
-        return business
+        if not can_visit_website(website, page_url):
+            continue
 
-    parsed = urlparse(website)
+        html = fetch_page(page_url)
 
-    base = f"{parsed.scheme}://{parsed.netloc}"
+        if not html:
+            continue
 
-    pages = [
-        website,
-        urljoin(base, "/contact"),
-        urljoin(base, "/contact-us"),
-        urljoin(base, "/about"),
-        urljoin(base, "/about-us")
-    ]
+        parser = ContactParser()
+        parser.feed(html)
 
-    for page_url in pages:
+        if not row["email"]:
+            for found_email in parser.emails:
+                if valid_email_domain(found_email):
+                    row["email"] = found_email.lower()
+                    row["email_source"] = page_url
+                    row["email_status"] = "MX valid"
+                    break
 
-        try:
+        if not row["phone"]:
+            for found_phone in parser.phones:
+                phone = normalize_phone(found_phone)
 
-            if not robots.can_fetch(USER_AGENT, page_url):
-                continue
+                if phone:
+                    row["phone"] = phone
+                    row["phone_source"] = page_url
+                    break
 
-            html = fetch_page(page_url)
+        if row["phone"] and row["email"]:
+            break
 
-            parser = ContactParser()
-
-            parser.feed(html)
-
-            if not business["phone"]:
-
-                for phone in sorted(parser.phones):
-
-                    valid = clean_phone(phone)
-
-                    if valid:
-
-                        business["phone"] = valid
-                        business["phone_source"] = page_url
-
-                        break
-
-            if not business["email"]:
-
-                for email in sorted(parser.emails):
-
-                    if valid_email_domain(email):
-
-                        business["email"] = email.lower()
-                        business["email_source"] = page_url
-
-                        break
-
-            if business["phone"] and business["email"]:
-                break
-
-            time.sleep(0.5)
-
-        except Exception as error:
-
-            print("Page skipped:", page_url, error)
-
-    if business["email"]:
-        business["email_status"] = "MX record found"
-    else:
-        business["email_status"] = "Not found"
-
-    return business
+    return row
 
 
 # --------------------------------------------------
-# 10. SCORE BUSINESS
+# LEAD SCORING
 # --------------------------------------------------
 
-def score_business(business):
-
+def score_business(row):
     score = 0
 
-    if business["phone"]:
+    if row["phone"]:
         score += 3
 
-    if business["email"]:
+    if row["email"]:
         score += 3
 
-    if business["website"]:
+    if row["website"]:
         score += 1
 
-    if business["address"]:
+    if row["address"]:
         score += 1
 
-    if business["phone"] and business["email"]:
-
-        priority = "Phone + Email"
-
+    if row["phone"] and row["email"]:
         score += 3
 
-    elif business["phone"] or business["email"]:
-
-        priority = "One contact"
-
+    if row["phone"] and row["email"]:
+        priority = "High - Phone + Email"
+    elif row["phone"] or row["email"]:
+        priority = "Medium - One Contact"
     else:
+        priority = "Low - No Contact"
 
-        priority = "No contact"
+    row["contact_priority"] = priority
+    row["lead_score"] = score
 
-    business["contact_priority"] = priority
-
-    business["lead_score"] = score
-
-    return business
+    return row
 
 
 # --------------------------------------------------
-# 11. DUPLICATE SIGNATURE
+# DUPLICATE CHECKING
 # --------------------------------------------------
 
-def business_signatures(item):
+def business_signatures(row):
+    name = clean(row.get("name")).lower()
+    phone = clean(row.get("phone"))
+    address = clean(row.get("address")).lower()
 
-    signatures = set()
+    website = clean(row.get("website")).lower()
+    domain = urlparse(website).netloc.replace("www.", "")
 
-    name = re.sub(
-        r"[^a-z0-9]",
-        "",
-        item.get("name", "").lower()
-    )
-
-    phone = normalize_phone(
-        item.get("phone", "")
-    )
-
-    website = normalize_website(
-        item.get("website", "")
-    )
-
-    domain = urlparse(website).hostname or ""
-
-    domain = domain.lower()
-
-    if domain.startswith("www."):
-        domain = domain[4:]
-
-    address = re.sub(
-        r"[^a-z0-9]",
-        "",
-        item.get("address", "").lower()
-    )
+    signatures = []
 
     if name and phone:
-        signatures.add(("phone", name, phone))
+        signatures.append("phone:" + name + "|" + phone)
 
     if name and domain:
-        signatures.add(("website", name, domain))
+        signatures.append("website:" + name + "|" + domain)
 
     if name and address:
-        signatures.add(("address", name, address))
+        signatures.append("address:" + name + "|" + address)
 
     return signatures
 
 
-def remove_duplicate_records(records):
+def remove_duplicate_records(rows):
+    unique = []
+    seen = set()
 
-    unique_records = []
+    for row in rows:
+        signatures = business_signatures(row)
 
-    seen_signatures = set()
+        if not signatures:
+            signatures = [clean(row.get("osm_id"))]
 
-    seen_ids = set()
-
-    for item in records:
-
-        osm_id = item.get("osm_id", "")
-
-        if osm_id and osm_id in seen_ids:
+        if any(signature in seen for signature in signatures):
             continue
 
-        signatures = business_signatures(item)
+        seen.update(signatures)
+        unique.append(row)
 
-        if signatures and signatures.intersection(seen_signatures):
-            continue
-
-        if osm_id:
-            seen_ids.add(osm_id)
-
-        seen_signatures.update(signatures)
-
-        unique_records.append(item)
-
-    return unique_records
+    return unique
 
 
 # --------------------------------------------------
-# 12. READ OLD CSV
+# CSV HELPERS
 # --------------------------------------------------
 
 def read_csv_file(filename):
-
-    records = {}
-
     if not os.path.exists(filename):
-        return records
+        return []
 
-    try:
-
-        with open(
-            filename,
-            newline="",
-            encoding="utf-8-sig"
-        ) as file:
-
-            reader = csv.DictReader(file)
-
-            for row in reader:
-
-                osm_id = row.get(
-                    "osm_id", ""
-                ).strip()
-
-                if osm_id:
-                    records[osm_id] = row
-
-    except Exception as error:
-
-        print("CSV read error:", error)
-
-    return records
+    with open(filename, "r", encoding="utf-8-sig", newline="") as file:
+        return list(csv.DictReader(file))
 
 
-# --------------------------------------------------
-# 13. WRITE CSV
-# --------------------------------------------------
-
-def write_csv_file(filename, records):
-
-    with open(
-        filename,
-        "w",
-        newline="",
-        encoding="utf-8-sig"
-    ) as file:
-
+def write_csv_file(filename, rows):
+    with open(filename, "w", encoding="utf-8-sig", newline="") as file:
         writer = csv.DictWriter(
             file,
             fieldnames=FIELDS,
@@ -789,169 +566,95 @@ def write_csv_file(filename, records):
 
         writer.writeheader()
 
-        for record in records:
-
-            writer.writerow({
-                field: record.get(field, "")
-                for field in FIELDS
-            })
+        for row in rows:
+            writer.writerow(row)
 
 
 # --------------------------------------------------
-# 14. MAIN PROGRAM
+# MAIN AGENT
 # --------------------------------------------------
 
 def main():
+    print("=" * 50)
+    print("BUSINESSFINDERAI - INDIA LEAD ENGINE")
+    print("=" * 50)
 
-    if os.path.exists(HISTORY):
+    seen_ids = load_history()
 
-        with open(
-            HISTORY,
-            encoding="utf-8"
-        ) as file:
+    candidates = get_osm_data(seen_ids)
 
-            seen = set(
-                line.strip()
-                for line in file
-                if line.strip()
-            )
-
-    else:
-
-        seen = set()
-
-    print("Downloading Ahmedabad business records...")
-
-    data = get_osm_data()
-
-    businesses = extract_osm_businesses(
-        data, seen
+    # Existing contact details vala business pehla
+    candidates.sort(
+        key=lambda row: (
+            bool(row["phone"] and row["email"]),
+            bool(row["phone"] or row["email"]),
+            bool(row["website"])
+        ),
+        reverse=True
     )
 
-    print(
-        "New businesses found:",
-        len(businesses)
-    )
+    processed = []
 
-    # Existing contact information first.
-    businesses.sort(
-        key=lambda item: (
-            0 if item["phone"] and item["email"]
-            else 1 if item["phone"] or item["email"]
-            else 2,
-            item["name"].lower()
-        )
-    )
+    print("Checking business contact details...")
 
-    candidates = businesses[:MAX_CANDIDATES]
-
-    enriched = []
-
-    for index, business in enumerate(
-        candidates, start=1
-    ):
-
+    for index, row in enumerate(candidates, start=1):
         print(
-            f'Checking {index}/{len(candidates)}: '
-            f'{business["name"]}'
+            f"Checking {index}/{len(candidates)}: {row['name']}"
         )
 
-        business = enrich_business(business)
+        try:
+            row = enrich_business(row)
+            row = score_business(row)
+            processed.append(row)
 
-        business = score_business(business)
+        except Exception as error:
+            print("Business skipped:", error)
 
-        enriched.append(business)
+        time.sleep(0.2)
 
-        time.sleep(0.5)
-
-    # Remove duplicate businesses.
-    enriched = remove_duplicate_records(enriched)
-
-    # Contact priority sorting.
-    enriched.sort(
-        key=lambda item: (
-            0 if item["contact_priority"] == "Phone + Email"
-            else 1 if item["contact_priority"] == "One contact"
-            else 2,
-            -int(item["lead_score"]),
-            item["name"].lower()
-        )
+    processed.sort(
+        key=lambda row: (
+            row["lead_score"],
+            bool(row["phone"] and row["email"])
+        ),
+        reverse=True
     )
 
-    selected = enriched[:LIMIT]
+    # Today's maximum 30 new leads
+    today_leads = processed[:LIMIT]
 
-    # Today's leads.
-    write_csv_file(
-        OUTPUT,
-        selected
+    write_csv_file(OUTPUT, today_leads)
+
+    # Save selected IDs for future duplicate checking
+    for row in today_leads:
+        seen_ids.add(row["osm_id"])
+
+    save_history(seen_ids)
+
+    # Preserve previous dashboard data
+    old_public_leads = read_csv_file(PUBLIC_OUTPUT)
+
+    combined = old_public_leads + today_leads
+    combined = remove_duplicate_records(combined)
+
+    combined.sort(
+        key=lambda row: int(row.get("lead_score") or 0),
+        reverse=True
     )
 
-    # Save exported OSM IDs.
-    seen.update(
-        item["osm_id"]
-        for item in selected
-    )
+    write_csv_file(PUBLIC_OUTPUT, combined)
 
-    with open(
-        HISTORY,
-        "w",
-        encoding="utf-8"
-    ) as file:
-
-        for item in sorted(seen):
-            file.write(item + "\n")
-
-    # Preserve old dashboard leads.
-    old_records = read_csv_file(
-        PUBLIC_OUTPUT
-    )
-
-    all_records = (
-        list(old_records.values()) + selected
-    )
-
-    all_records = remove_duplicate_records(
-        all_records
-    )
-
-    all_records.sort(
-        key=lambda item: (
-            0 if item.get("contact_priority") == "Phone + Email"
-            else 1 if item.get("contact_priority") == "One contact"
-            else 2,
-            item.get("name", "").lower()
-        )
-    )
-
-    write_csv_file(
-        PUBLIC_OUTPUT,
-        all_records
-    )
-
-    # Report.
-    both = sum(
-        1 for item in selected
-        if item["contact_priority"] == "Phone + Email"
-    )
-
-    one = sum(
-        1 for item in selected
-        if item["contact_priority"] == "One contact"
-    )
-
-    none = sum(
-        1 for item in selected
-        if item["contact_priority"] == "No contact"
-    )
-
-    print("--------------------------------")
-    print("Ahmedabad Lead Report")
-    print("Total exported:", len(selected))
-    print("Phone + Email:", both)
-    print("One contact:", one)
-    print("No contact:", none)
-    print("Total dashboard leads:", len(all_records))
-    print("--------------------------------")
+    print("=" * 50)
+    print("INDIA BUSINESSFINDERAI REPORT")
+    print("New leads:", len(today_leads))
+    print("High priority:", sum(
+        1 for row in today_leads
+        if row["contact_priority"] == "High - Phone + Email"
+    ))
+    print("Total dashboard leads:", len(combined))
+    print("CSV saved:", OUTPUT)
+    print("Dashboard data saved:", PUBLIC_OUTPUT)
+    print("=" * 50)
 
 
 if __name__ == "__main__":
