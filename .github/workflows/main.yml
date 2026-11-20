@@ -1,5 +1,5 @@
 
-name: BusinessFinderAI Ahmedabad Contact Leads
+name: BusinessFinderAI India Daily Agent
 
 on:
   workflow_dispatch:
@@ -10,13 +10,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: businessfinderai-ahmedabad
+  group: businessfinderai-india
   cancel-in-progress: false
 
 jobs:
   generate-leads:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 120
 
     steps:
       - name: Checkout repository
@@ -34,10 +34,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Download India OpenStreetMap data
+        run: |
+          curl --fail --location \
+            --retry 3 \
+            --retry-delay 10 \
+            --connect-timeout 30 \
+            -o india-latest.osm.pbf \
+            https://download.geofabrik.de/asia/india-latest.osm.pbf
+
       - name: Run BusinessFinderAI
         run: python src/lead_engine.py
 
-      - name: Save dashboard and duplicate history
+      - name: Save leads and duplicate history
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -45,16 +54,16 @@ jobs:
           git add public_leads.csv seen_businesses.txt
 
           if ! git diff --cached --quiet; then
-            git commit -m "Update Ahmedabad contact leads"
+            git commit -m "Update India business leads"
             git push
           else
             echo "No new data to save."
           fi
 
-      - name: Upload CSV
+      - name: Upload daily CSV
         uses: actions/upload-artifact@v4
         with:
-          name: ahmedabad-contact-leads-${{ github.run_number }}
+          name: india-business-leads-${{ github.run_number }}
           path: business_leads.csv
           if-no-files-found: error
           retention-days: 7
