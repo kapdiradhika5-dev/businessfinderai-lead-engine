@@ -1,8 +1,35 @@
+address:ayda restaurant|opposite bda complex 19th main road banashankari bangalore
+address:babita hand embroidery|398 durga marg
+address:c n k hospital p ltd|i e nagar p o madukkamoodu changanassery
+address:choutapally government hospital|hanuman statue choutapally
+address:dgd bhorgarh|village bhor garh narela
+address:dhunadara phc|kheda
+address:dr mahesh shah clinc|49 12 patnipura square indore
+address:excise range office mala|1st floor kodakara kodungallur road vadama
+address:general store 1|1 254 gandhi booma street east godavari district madhurapudi
+address:government hospital nisarpur|punarvas basawat
+address:kudla beach|73 kantha complex dr rajkumar road 3rd stage rajajinaga bangalore
+address:phc doddamettikurke|doddamethikere
+address:phc paldi|mahilpur phagwara road near punjab national bank vpo paldi
+address:rajveer collection|shop no 21 shri krishna nagar sagar co operative housing society bavdhan pune
+address:rohit chemist|20 1 janjeerwala square indore
+address:rural development trust hospital blood bank|kadiri road bathalapalli
+address:satyavathi shop|1 22 lododdi
+address:shanghai times|whitefield main road mahadevpura devasandra industrial estate krishnarajapuram bengaluru bengaluru
+address:sri datta jali maker|datta mandir road
+address:star telecom centre|32 a
+address:state bank of india koruthodu|mundakayam elavungal state highway pallippady
+address:taluk supply office pathanapuram|17 1311 pathanapuram
+address:udupi garden|18th cross rd
+address:white house|77
+email:taluk supply office pathanapuram|tsopathanapuram@gmail.com
+node/10080050121
 node/10648144248
 node/107291175
 node/10889463922
 node/10889899257
 node/11122258435
+node/11235990464
 node/11236499287
 node/11335282454
 node/11900351768
@@ -11,8 +38,12 @@ node/12172847005
 node/1234844704
 node/1236657820
 node/1241884694
+node/12529266902
 node/125907877
 node/12592872620
+node/12672681266
+node/12725764363
+node/12993612753
 node/12993640845
 node/1313805176
 node/1313805177
@@ -29,9 +60,12 @@ node/1369674748
 node/13731868647
 node/13806081629
 node/13947777451
+node/13961528101
+node/13972255326
 node/14018972712
 node/14102804257
 node/14159229701
+node/14183301368
 node/14289153000
 node/1429887846
 node/1429922824
@@ -580,6 +614,7 @@ node/324219399
 node/324834915
 node/324863709
 node/324865364
+node/3808120918
 node/4193479101
 node/4284081248
 node/4338401492
@@ -589,24 +624,33 @@ node/440310550
 node/440339381
 node/440339389
 node/440360562
+node/4445192190
+node/4446322676
+node/4447090186
 node/4447235887
 node/4488136102
 node/4578929190
 node/4676023589
 node/4885223275
 node/5136979522
+node/5147014553
+node/5276888033
 node/5353985489
 node/59710905
+node/6202702682
 node/62028174
+node/6202835047
 node/62069903
 node/6226098485
 node/6227673791
 node/631823296
 node/631823300
 node/632066507
+node/6751896632
 node/6926494062
 node/6927326555
 node/6938948962
+node/6956559041
 node/695666626
 node/695666627
 node/7018342625
@@ -615,9 +659,15 @@ node/7028720845
 node/7037707168
 node/7066497233
 node/7072638951
+node/7106625135
+node/7116293072
+node/7138534308
 node/7138660356
 node/7144783583
+node/7150766812
+node/7165606632
 node/7202986997
+node/7202987018
 node/7226575987
 node/7229312443
 node/7366214578
@@ -639,7 +689,9 @@ node/7810163424
 node/7813312594
 node/7865991261
 node/7866217281
+node/8006086642
 node/8095658232
+node/8097184787
 node/8152270626
 node/8277262963
 node/8349177617
@@ -648,13 +700,41 @@ node/8946557476
 node/8974358127
 node/9006132085
 node/9009705195
+node/9070391459
 node/9090478187
 node/9161693381
 node/9221693769
+node/9279711575
 node/9333532299
 node/9466195429
+node/9612873176
 node/9783583912
 node/9855960425
 node/9948640331
+phone:a to z tools center|919848459277
+phone:ayda restaurant|08042124293
+phone:babita hand embroidery|919711401872
+phone:c n k hospital p ltd|914812722888
+phone:choutapally government hospital|8673286422
+phone:dgd bhorgarh|27781004
+phone:dhunadara phc|02699285332
+phone:excise range office mala|914802895770
+phone:general store 1|9874512652
+phone:government hospital nisarpur|07297266680
+phone:guru nanak store|919990132108
+phone:hidden hair beauty salon|918848651607
+phone:kudla beach|08032409844
+phone:phc doddamettikurke|08174251705
+phone:phc paldi|1882242142
+phone:rajveer collection|919325403495
+phone:rohit chemist|8989699388
+phone:rural development trust hospital blood bank|08559244259
+phone:satyavathi shop|7901364804
+phone:shanghai times|918067266130
+phone:sri datta jali maker|9823296225
+phone:star telecom centre|919811327478
+phone:state bank of india koruthodu|914828280229
+phone:taluk supply office pathanapuram|914752350020
+phone:udupi garden|09035323899
 way/1324432333
 way/754019042
