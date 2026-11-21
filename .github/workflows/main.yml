@@ -34,17 +34,54 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
  
+      
       - name: Download India OpenStreetMap data
         run: |
-          curl --fail --location \
-            --retry 5 \
+          set -e
+
+          echo "Trying primary Geofabrik server..."
+
+          if curl --fail --location \
+            --retry 2 \
             --retry-all-errors \
-            --retry-connrefused \
             --retry-delay 15 \
             --connect-timeout 60 \
             --max-time 1800 \
-            -o india-latest.osm.pbf \
-            https://download.geofabrik.de/asia/india-latest.osm.pbf
+            -o india-latest.osm.pbf.tmp \
+            https://download.geofabrik.de/asia/india-latest.osm.pbf; then
+
+            echo "Primary download successful."
+
+          else
+            echo "Primary server failed. Trying backup server..."
+            rm -f india-latest.osm.pbf.tmp
+
+            curl --fail --location \
+              --retry 3 \
+              --retry-all-errors \
+              --retry-delay 20 \
+              --connect-timeout 60 \
+              --max-time 1800 \
+              -o india-latest.osm.pbf.tmp \
+              https://download-ext2.geofabrik.de/asia/india-latest.osm.pbf
+          fi
+
+          if [ ! -s india-latest.osm.pbf.tmp ]; then
+            echo "ERROR: Downloaded file is empty."
+            exit 1
+          fi
+
+          FILE_SIZE=$(stat -c%s india-latest.osm.pbf.tmp)
+
+          if [ "$FILE_SIZE" -lt 100000000 ]; then
+            echo "ERROR: Downloaded file is too small."
+            exit 1
+          fi
+
+          mv india-latest.osm.pbf.tmp india-latest.osm.pbf
+
+          echo "India OSM download completed."
+          ls -lh india-latest.osm.pbf
 
       - name: Run BusinessFinderAI
         run: python -u src/lead_engine.py
