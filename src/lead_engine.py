@@ -1,17 +1,15 @@
 
 import csv
-import json
 import os
 import re
 import random
 import time
 import urllib.request
-import urllib.parse
 import urllib.robotparser
 from datetime import date
 from html.parser import HTMLParser
 from urllib.parse import urljoin, urlparse
-from urllib.error import HTTPError, URLError
+from urllib.error import HTTPError
 
 import dns.resolver
 import osmium
@@ -128,7 +126,7 @@ def valid_email_domain(email):
 
 
 # --------------------------------------------------
-# OSM DATA EXTRACTION
+# OSM DATA EXTRACTION - NODES ONLY
 # --------------------------------------------------
 
 def get_category(tags):
@@ -147,11 +145,12 @@ def get_category(tags):
 
 
 def get_address(tags):
-    parts = []
-
     full = clean(tags.get("addr:full"))
+
     if full:
         return full
+
+    parts = []
 
     for key in (
         "addr:housenumber",
@@ -161,70 +160,61 @@ def get_address(tags):
         "addr:postcode"
     ):
         value = clean(tags.get(key))
+
         if value:
             parts.append(value)
 
     return ", ".join(parts)
 
 
-def get_coordinates(obj):
-    try:
-        if hasattr(obj, "location"):
-            location = obj.location
-
-            if location.valid():
-                return location.lat, location.lon
-
-        if hasattr(obj, "nodes"):
-            latitudes = []
-            longitudes = []
-
-            for node in obj.nodes:
-                if node.location.valid():
-                    latitudes.append(node.lat)
-                    longitudes.append(node.lon)
-
-            if latitudes:
-                return (
-                    sum(latitudes) / len(latitudes),
-                    sum(longitudes) / len(longitudes)
-                )
-
-    except Exception:
-        pass
-
-    return "", ""
-
-
 class IndiaBusinessHandler(osmium.SimpleHandler):
 
     def __init__(self, seen):
         super().__init__()
+
         self.seen = seen
         self.candidates = []
         self.total_found = 0
+        self.total_nodes = 0
+
         self.randomizer = random.Random(date.today().isoformat())
 
-    def process_business(self, obj, object_type):
+    def node(self, obj):
+
+        self.total_nodes += 1
+
+        # Progress message after every 1 million nodes
+        if self.total_nodes % 1000000 == 0:
+            print(
+                "OSM nodes processed:",
+                self.total_nodes,
+                "| Businesses found:",
+                self.total_found,
+                flush=True
+            )
+
         tags = obj.tags
 
         name = clean(tags.get("name"))
+
         if not name:
             return
 
         category, subcategory = get_category(tags)
+
         if not category:
             return
 
-        osm_id = f"{object_type}/{obj.id}"
+        osm_id = f"node/{obj.id}"
 
         if osm_id in self.seen:
             return
 
-        lat, lon = get_coordinates(obj)
-
-        if lat == "" or lon == "":
+        if not obj.location.valid():
             return
+
+        lat = obj.location.lat
+        lon = obj.location.lon
 
         self.total_found += 1
 
@@ -246,7 +236,9 @@ class IndiaBusinessHandler(osmium.SimpleHandler):
             "category": category,
             "subcategory": subcategory,
             "address": get_address(tags),
-            "city": clean(tags.get("addr:city") or tags.get("addr:district")),
+            "city": clean(
+                tags.get("addr:city") or tags.get("addr:district")
+            ),
             "state": clean(tags.get("addr:state")),
             "phone": phone,
             "email": email,
@@ -258,41 +250,39 @@ class IndiaBusinessHandler(osmium.SimpleHandler):
             "lead_score": 0,
             "latitude": lat,
             "longitude": lon,
-            "osm_url": f"https://www.openstreetmap.org/{object_type}/{obj.id}"
+            "osm_url": f"https://www.openstreetmap.org/node/{obj.id}"
         }
 
-        # Reservoir sampling: India na alag-alag areas mathi sample
+        # Reservoir sampling
         if len(self.candidates) < MAX_CANDIDATES:
             self.candidates.append(row)
+
         else:
             position = self.randomizer.randint(1, self.total_found)
 
             if position <= MAX_CANDIDATES:
                 self.candidates[position - 1] = row
 
-    def node(self, obj):
-        self.process_business(obj, "node")
-
-    def way(self, obj):
-        self.process_business(obj, "way")
-
 
 def get_osm_data(seen):
+
     if not os.path.exists(PBF_FILE):
         raise FileNotFoundError(
-            "India PBF file not found. Workflow ma download step check karo."
+            "India PBF file not found. Workflow download step check karo."
         )
 
-    print("Reading India-wide OpenStreetMap data...")
+    print("Reading India-wide OpenStreetMap nodes...", flush=True)
 
     handler = IndiaBusinessHandler(seen)
 
-    handler.apply_file(
-        PBF_FILE,
-        locations=True,
-        idx="dense_mmap_array"
-    )
+    # IMPORTANT:
+    # No locations=True
+    # No dense_mmap_array
+    # No way processing
 
+    handler.apply_file(PBF_FILE)
+
+    print("Total OSM nodes processed:", handler.total_nodes)
     print("Total new businesses found:", handler.total_found)
     print("Sampled businesses:", len(handler.candidates))
 
@@ -307,16 +297,18 @@ class ContactParser(HTMLParser):
 
     def __init__(self):
         super().__init__()
+
         self.emails = set()
         self.phones = set()
         self.links = set()
 
     def handle_starttag(self, tag, attrs):
-        attrs = dict(attrs)
 
+        attrs = dict(attrs)
         href = clean(attrs.get("href"))
 
         if tag == "a" and href:
+
             if href.startswith("mailto:"):
                 self.emails.add(href[7:].split("?")[0])
 
@@ -327,6 +319,7 @@ class ContactParser(HTMLParser):
                 self.links.add(href)
 
     def handle_data(self, data):
+
         text = clean(data)
 
         for email in re.findall(
@@ -343,20 +336,24 @@ class ContactParser(HTMLParser):
 
 
 def fetch_page(url):
+
     try:
+
         request = urllib.request.Request(
             url,
             headers={"User-Agent": USER_AGENT}
         )
 
         with urllib.request.urlopen(request, timeout=7) as response:
+
             content_type = response.headers.get("Content-Type", "")
 
             if "text/html" not in content_type.lower():
                 return ""
 
             return response.read(350000).decode(
-                "utf-8", errors="ignore"
+                "utf-8",
+                errors="ignore"
             )
 
     except Exception:
@@ -364,7 +361,9 @@ def fetch_page(url):
 
 
 def can_visit_website(base_url, page_url):
+
     try:
+
         robots_url = urljoin(base_url + "/", "robots.txt")
 
         request = urllib.request.Request(
@@ -373,8 +372,10 @@ def can_visit_website(base_url, page_url):
         )
 
         with urllib.request.urlopen(request, timeout=5) as response:
+
             robots_text = response.read(100000).decode(
-                "utf-8", errors="ignore"
+                "utf-8",
+                errors="ignore"
             )
 
         parser = urllib.robotparser.RobotFileParser()
@@ -384,8 +385,10 @@ def can_visit_website(base_url, page_url):
         return parser.can_fetch(USER_AGENT, page_url)
 
     except HTTPError as error:
+
         if error.code == 404:
             return True
+
         return False
 
     except Exception:
@@ -393,12 +396,15 @@ def can_visit_website(base_url, page_url):
 
 
 def enrich_business(row):
+
     row["phone"] = normalize_phone(row["phone"])
     row["email"] = clean(row["email"]).lower()
 
     if row["email"]:
+
         if valid_email_domain(row["email"]):
             row["email_status"] = "MX valid"
+
         else:
             row["email"] = ""
             row["email_status"] = "Invalid or no MX"
@@ -413,15 +419,18 @@ def enrich_business(row):
     homepage = fetch_page(website)
 
     if homepage:
+
         parser = ContactParser()
         parser.feed(homepage)
 
         for link in parser.links:
+
             text = link.lower()
 
             if any(word in text for word in (
                 "contact", "about", "support"
             )):
+
                 full_url = urljoin(website + "/", link)
 
                 if urlparse(full_url).netloc == urlparse(website).netloc:
@@ -442,20 +451,28 @@ def enrich_business(row):
         parser.feed(html)
 
         if not row["email"]:
+
             for found_email in parser.emails:
+
                 if valid_email_domain(found_email):
+
                     row["email"] = found_email.lower()
                     row["email_source"] = page_url
                     row["email_status"] = "MX valid"
+
                     break
 
         if not row["phone"]:
+
             for found_phone in parser.phones:
+
                 phone = normalize_phone(found_phone)
 
                 if phone:
+
                     row["phone"] = phone
                     row["phone_source"] = page_url
+
                     break
 
         if row["phone"] and row["email"]:
@@ -469,6 +486,7 @@ def enrich_business(row):
 # --------------------------------------------------
 
 def score_business(row):
+
     score = 0
 
     if row["phone"]:
@@ -488,8 +506,10 @@ def score_business(row):
 
     if row["phone"] and row["email"]:
         priority = "High - Phone + Email"
+
     elif row["phone"] or row["email"]:
         priority = "Medium - One Contact"
+
     else:
         priority = "Low - No Contact"
 
@@ -504,6 +524,7 @@ def score_business(row):
 # --------------------------------------------------
 
 def business_signatures(row):
+
     name = clean(row.get("name")).lower()
     phone = clean(row.get("phone"))
     address = clean(row.get("address")).lower()
@@ -526,10 +547,12 @@ def business_signatures(row):
 
 
 def remove_duplicate_records(rows):
+
     unique = []
     seen = set()
 
     for row in rows:
+
         signatures = business_signatures(row)
 
         if not signatures:
@@ -549,15 +572,29 @@ def remove_duplicate_records(rows):
 # --------------------------------------------------
 
 def read_csv_file(filename):
+
     if not os.path.exists(filename):
         return []
 
-    with open(filename, "r", encoding="utf-8-sig", newline="") as file:
+    with open(
+        filename,
+        "r",
+        encoding="utf-8-sig",
+        newline=""
+    ) as file:
+
         return list(csv.DictReader(file))
 
 
 def write_csv_file(filename, rows):
-    with open(filename, "w", encoding="utf-8-sig", newline="") as file:
+
+    with open(
+        filename,
+        "w",
+        encoding="utf-8-sig",
+        newline=""
+    ) as file:
+
         writer = csv.DictWriter(
             file,
             fieldnames=FIELDS,
@@ -575,6 +612,7 @@ def write_csv_file(filename, rows):
 # --------------------------------------------------
 
 def main():
+
     print("=" * 50)
     print("BUSINESSFINDERAI - INDIA LEAD ENGINE")
     print("=" * 50)
@@ -595,20 +633,25 @@ def main():
 
     processed = []
 
-    print("Checking business contact details...")
+    print("Checking business contact details...", flush=True)
 
     for index, row in enumerate(candidates, start=1):
+
         print(
-            f"Checking {index}/{len(candidates)}: {row['name']}"
+            f"Checking {index}/{len(candidates)}: {row['name']}",
+            flush=True
         )
 
         try:
+
             row = enrich_business(row)
             row = score_business(row)
+
             processed.append(row)
 
         except Exception as error:
-            print("Business skipped:", error)
+
+            print("Business skipped:", error, flush=True)
 
         time.sleep(0.2)
 
@@ -647,10 +690,15 @@ def main():
     print("=" * 50)
     print("INDIA BUSINESSFINDERAI REPORT")
     print("New leads:", len(today_leads))
-    print("High priority:", sum(
-        1 for row in today_leads
-        if row["contact_priority"] == "High - Phone + Email"
-    ))
+
+    print(
+        "High priority:",
+        sum(
+            1 for row in today_leads
+            if row["contact_priority"] == "High - Phone + Email"
+        )
+    )
+
     print("Total dashboard leads:", len(combined))
     print("CSV saved:", OUTPUT)
     print("Dashboard data saved:", PUBLIC_OUTPUT)
