@@ -372,7 +372,7 @@ def get_osm_data():
 
     handler = IndiaBusinessHandler()
 
-    handler.apply_file(str(PBF_PATH), locations=False)
+    handler.apply_file(str(PBF_PATH), locations=True)
 
     print("\nOpenStreetMap business records:", handler.total_businesses)
 
