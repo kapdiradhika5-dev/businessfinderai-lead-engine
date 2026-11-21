@@ -2,17 +2,19 @@
 import csv
 import os
 import re
-import time
 import random
+import socket
 import urllib.request
 import urllib.robotparser
-from datetime import date
-from html.parser import HTMLParser
-from urllib.parse import urljoin, urlparse
-from urllib.error import HTTPError
-
+import urllib.error
 import dns.resolver
 import osmium
+
+from pathlib import Path
+from html.parser import HTMLParser
+from urllib.parse import urljoin, urlparse, urlunparse
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 
 
 # --------------------------------------------------
@@ -27,190 +29,156 @@ MAX_INCOMPLETE_WEBSITE = 200
 MAX_GOOD_WEBSITE = 100
 
 PBF_FILE = "india-latest.osm.pbf"
+DAILY_CSV = "business_leads.csv"
+DASHBOARD_CSV = "public_leads.csv"
+HISTORY_FILE = "seen_businesses.txt"
 
-HISTORY = "seen_businesses.txt"
-OUTPUT = "business_leads.csv"
-PUBLIC_OUTPUT = "public_leads.csv"
+USER_AGENT = "BusinessFinderAI/1.0 (business website opportunity research)"
+REQUEST_TIMEOUT = 5
+ROBOTS_TIMEOUT = 4
+MAX_PAGE_BYTES = 400_000
+MAX_CONTACT_PAGES = 2
 
-USER_AGENT = "BusinessFinderAI/1.0 (business contact discovery)"
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
+PBF_PATH = ROOT_DIR / PBF_FILE
+DAILY_PATH = ROOT_DIR / DAILY_CSV
+DASHBOARD_PATH = ROOT_DIR / DASHBOARD_CSV
+HISTORY_PATH = ROOT_DIR / HISTORY_FILE
+
+random.seed()
+
 
 FIELDS = [
-    "osm_id", "name", "category", "subcategory",
-    "address", "city", "state", "phone", "email",
-    "website", "phone_source", "email_source",
-    "email_status", "contact_priority", "lead_score",
-    "latitude", "longitude", "osm_url"
+    "osm_id",
+    "name",
+    "category",
+    "subcategory",
+    "address",
+    "city",
+    "state",
+    "phone",
+    "email",
+    "website",
+    "website_status",
+    "website_opportunity",
+    "opportunity_reason",
+    "phone_source",
+    "email_source",
+    "email_status",
+    "contact_priority",
+    "lead_score",
+    "latitude",
+    "longitude",
+    "osm_url",
 ]
 
-AMENITY_VALUES = {
-    "restaurant", "cafe", "fast_food", "bank",
-    "pharmacy", "clinic", "doctors", "dentist",
-    "veterinary", "car_repair", "car_wash", "fuel",
-    "beauty_salon", "marketplace", "coworking_space",
-    "hospital", "hotel", "school", "college",
-    "gym", "bar", "pub", "laundry",
-    "travel_agency", "car_rental"
-}
-
-MX_CACHE = {}
-WEBSITE_CACHE = {}
-
 
 # --------------------------------------------------
-# BASIC HELPERS
+# GENERAL HELPERS
 # --------------------------------------------------
 
-def clean(value):
-    return str(value or "").strip()
+def clean_text(value):
+    if value is None:
+        return ""
+
+    return re.sub(r"\s+", " ", str(value)).strip()
 
 
-def load_history():
-
-    if not os.path.exists(HISTORY):
-        return set()
-
-    with open(HISTORY, "r", encoding="utf-8") as file:
-        return {
-            line.strip()
-            for line in file
-            if line.strip()
-        }
-
-
-def save_history(seen_ids):
-
-    with open(HISTORY, "w", encoding="utf-8") as file:
-        for item in sorted(seen_ids):
-            file.write(item + "\n")
+def normalize_text(value):
+    value = clean_text(value).lower()
+    value = re.sub(r"[^a-z0-9]+", " ", value)
+    return " ".join(value.split())
 
 
 def normalize_phone(value):
+    digits = re.sub(r"\D", "", clean_text(value))
 
-    digits = re.sub(r"\D", "", clean(value))
+    if len(digits) < 8 or len(digits) > 15:
+        return ""
 
-    if digits.startswith("0091"):
-        digits = digits[4:]
-
-    elif digits.startswith("91") and len(digits) == 12:
-        digits = digits[2:]
-
-    elif digits.startswith("0") and len(digits) == 11:
-        digits = digits[1:]
-
-    if len(digits) == 10 and digits[0] in "6789":
-        return "+91" + digits
-
-    return ""
+    return digits
 
 
 def normalize_email(value):
-
-    email = clean(value).lower()
+    value = clean_text(value).lower()
 
     if not re.fullmatch(
-        r"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}",
-        email
+        r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}",
+        value,
+        re.IGNORECASE
     ):
         return ""
 
-    return email
+    return value
 
 
 def normalize_website(value):
-
-    value = clean(value)
+    value = clean_text(value)
 
     if not value:
         return ""
 
-    if not value.startswith(("http://", "https://")):
+    if value.startswith("//"):
+        value = "https:" + value
+
+    if not re.match(r"^https?://", value, re.IGNORECASE):
         value = "https://" + value
 
-    parsed = urlparse(value)
+    try:
+        parsed = urlparse(value)
 
-    if not parsed.netloc or "." not in parsed.netloc:
+        if parsed.scheme.lower() not in ("http", "https"):
+            return ""
+
+        if not parsed.hostname:
+            return ""
+
+        if " " in parsed.hostname:
+            return ""
+
+        if parsed.username or parsed.password:
+            return ""
+
+        return urlunparse((
+            parsed.scheme.lower(),
+            parsed.netloc.lower(),
+            parsed.path or "/",
+            "",
+            parsed.query,
+            ""
+        ))
+
+    except Exception:
         return ""
-
-    if parsed.scheme not in ("http", "https"):
-        return ""
-
-    return value.rstrip("/")
 
 
 def website_domain(value):
-
-    website = normalize_website(value)
-
-    if not website:
+    try:
+        return (urlparse(value).hostname or "").lower().removeprefix("www.")
+    except Exception:
         return ""
 
-    domain = urlparse(website).netloc.lower()
 
-    if domain.startswith("www."):
-        domain = domain[4:]
+def get_first(tags, keys):
+    for key in keys:
+        value = clean_text(tags.get(key, ""))
 
-    return domain
+        if value:
+            return value
 
-
-def valid_email_domain(email):
-
-    email = normalize_email(email)
-
-    if not email:
-        return False
-
-    domain = email.split("@")[-1]
-
-    if domain in MX_CACHE:
-        return MX_CACHE[domain]
-
-    try:
-
-        dns.resolver.resolve(
-            domain,
-            "MX",
-            lifetime=4
-        )
-
-        MX_CACHE[domain] = True
-
-    except Exception:
-
-        MX_CACHE[domain] = False
-
-    return MX_CACHE[domain]
+    return ""
 
 
 # --------------------------------------------------
-# OSM DATA EXTRACTION
+# ADDRESS AND CATEGORY
 # --------------------------------------------------
-
-def get_category(tags):
-
-    for key in (
-        "shop", "office", "craft",
-        "healthcare", "amenity", "tourism"
-    ):
-
-        value = clean(tags.get(key))
-
-        if not value or value in ("yes", "no"):
-            continue
-
-        if key == "amenity" and value not in AMENITY_VALUES:
-            continue
-
-        return key, value
-
-    return "", ""
-
 
 def get_address(tags):
+    full_address = clean_text(tags.get("addr:full", ""))
 
-    full = clean(tags.get("addr:full"))
-
-    if full:
-        return full
+    if full_address:
+        return full_address
 
     parts = []
 
@@ -218,108 +186,79 @@ def get_address(tags):
         "addr:housenumber",
         "addr:street",
         "addr:suburb",
-        "addr:neighbourhood",
-        "addr:postcode"
+        "addr:district",
+        "addr:city"
     ):
+        value = clean_text(tags.get(key, ""))
 
-        value = clean(tags.get(key))
-
-        if value:
+        if value and value not in parts:
             parts.append(value)
 
     return ", ".join(parts)
 
 
-def get_city(tags):
+def get_category(tags):
+    category_keys = [
+        "shop",
+        "amenity",
+        "office",
+        "healthcare",
+        "craft",
+        "tourism"
+    ]
 
-    return clean(
-        tags.get("addr:city")
-        or tags.get("addr:town")
-        or tags.get("addr:village")
-        or tags.get("addr:district")
-    )
+    for key in category_keys:
+        value = clean_text(tags.get(key, ""))
+
+        if value:
+            return key, value
+
+    return "", ""
 
 
-def get_state(tags):
+def get_website(tags):
+    return normalize_website(get_first(tags, [
+        "website",
+        "contact:website",
+        "url"
+    ]))
 
-    return clean(
-        tags.get("addr:state")
-        or tags.get("is_in:state")
-    )
+
+def get_phone(tags):
+    value = get_first(tags, [
+        "contact:phone",
+        "phone",
+        "contact:mobile",
+        "mobile"
+    ])
+
+    return clean_text(value)
 
 
-def make_row(obj):
+def get_email(tags):
+    value = get_first(tags, [
+        "contact:email",
+        "email"
+    ])
 
-    tags = obj.tags
-
-    name = clean(tags.get("name"))
-
-    if not name:
-        return None
-
-    category, subcategory = get_category(tags)
-
-    if not category:
-        return None
-
-    if not obj.location.valid():
-        return None
-
-    phone = normalize_phone(
-        tags.get("contact:phone")
-        or tags.get("phone")
-    )
-
-    email = normalize_email(
-        tags.get("contact:email")
-        or tags.get("email")
-    )
-
-    website = normalize_website(
-        tags.get("contact:website")
-        or tags.get("website")
-    )
-
-    return {
-        "osm_id": f"node/{obj.id}",
-        "name": name,
-        "category": category,
-        "subcategory": subcategory,
-        "address": get_address(tags),
-        "city": get_city(tags),
-        "state": get_state(tags),
-        "phone": phone,
-        "email": email,
-        "website": website,
-        "phone_source": "OpenStreetMap" if phone else "",
-        "email_source": "OpenStreetMap" if email else "",
-        "email_status": "",
-        "contact_priority": "",
-        "lead_score": 0,
-        "latitude": obj.location.lat,
-        "longitude": obj.location.lon,
-        "osm_url": (
-            f"https://www.openstreetmap.org/node/{obj.id}"
-        )
-    }
+    return normalize_email(value)
 
 
 # --------------------------------------------------
-# WEBSITE OPPORTUNITY CANDIDATE POOLS
+# CANDIDATE SAMPLING
 # --------------------------------------------------
 
 class IndiaBusinessHandler(osmium.SimpleHandler):
 
-    def __init__(self, seen):
-
+    def __init__(self):
         super().__init__()
 
-        self.seen = seen
-
-        self.no_website = []
-        self.weak_website = []
-        self.incomplete_website = []
-        self.good_website = []
+        self.pools = {
+            "no_website": [],
+            "weak_website": [],
+            "incomplete_website": [],
+            "good_website": []
+        }
 
         self.counts = {
             "no_website": 0,
@@ -328,526 +267,884 @@ class IndiaBusinessHandler(osmium.SimpleHandler):
             "good_website": 0
         }
 
-        self.total_found = 0
-        self.total_nodes = 0
+        self.total_businesses = 0
 
-        self.randomizer = random.Random(
-            date.today().isoformat()
-        )
+    def add_to_pool(self, pool_name, candidate, maximum):
+        self.counts[pool_name] += 1
+        count = self.counts[pool_name]
 
-    def add_to_pool(self, row, pool, key, maximum):
-
-        self.counts[key] += 1
-        count = self.counts[key]
+        pool = self.pools[pool_name]
 
         if len(pool) < maximum:
-            pool.append(row)
-
-        else:
-
-            position = self.randomizer.randint(1, count)
-
-            if position <= maximum:
-                pool[position - 1] = row
-
-    def node(self, obj):
-
-        self.total_nodes += 1
-
-        if self.total_nodes % 1000000 == 0:
-
-            print(
-                "OSM nodes processed:",
-                self.total_nodes,
-                "| Businesses found:",
-                self.total_found,
-                flush=True
-            )
-
-        osm_id = f"node/{obj.id}"
-
-        if osm_id in self.seen:
+            pool.append(candidate)
             return
 
-        row = make_row(obj)
+        position = random.randint(0, count - 1)
 
-        if not row:
+        if position < maximum:
+            pool[position] = candidate
+
+    def node(self, node):
+
+        if not node.location.valid():
             return
 
-        self.total_found += 1
+        tags = {tag.k: tag.v for tag in node.tags}
 
-        if not row["website"]:
+        name = clean_text(tags.get("name", ""))
 
+        if not name:
+            return
+
+        category, subcategory = get_category(tags)
+
+        if not category:
+            return
+
+        self.total_businesses += 1
+
+        website = get_website(tags)
+        phone = get_phone(tags)
+        email = get_email(tags)
+
+        candidate = {
+            "osm_id": f"node/{node.id}",
+            "name": name,
+            "category": category,
+            "subcategory": subcategory,
+            "address": get_address(tags),
+            "city": get_first(tags, [
+                "addr:city",
+                "is_in:city",
+                "addr:town"
+            ]),
+            "state": get_first(tags, [
+                "addr:state",
+                "is_in:state"
+            ]),
+            "phone": phone,
+            "email": email,
+            "website": website,
+            "phone_source": "OpenStreetMap" if phone else "",
+            "email_source": "OpenStreetMap" if email else "",
+            "latitude": str(node.location.lat),
+            "longitude": str(node.location.lon),
+            "osm_url": f"https://www.openstreetmap.org/node/{node.id}"
+        }
+
+        if not website:
             self.add_to_pool(
-                row,
-                self.no_website,
                 "no_website",
+                candidate,
                 MAX_NO_WEBSITE
             )
 
-        elif not row["phone"] and not row["email"]:
-
+        elif not phone and not email:
             self.add_to_pool(
-                row,
-                self.weak_website,
                 "weak_website",
+                candidate,
                 MAX_WEAK_WEBSITE
             )
 
-        elif not row["phone"] or not row["email"]:
-
+        elif not phone or not email:
             self.add_to_pool(
-                row,
-                self.incomplete_website,
                 "incomplete_website",
+                candidate,
                 MAX_INCOMPLETE_WEBSITE
             )
 
         else:
-
             self.add_to_pool(
-                row,
-                self.good_website,
                 "good_website",
+                candidate,
                 MAX_GOOD_WEBSITE
             )
 
 
-def get_osm_data(seen):
+def get_osm_data():
 
-    if not os.path.exists(PBF_FILE):
-
+    if not PBF_PATH.exists():
         raise FileNotFoundError(
-            "India PBF file not found. Check workflow download step."
+            f"India OSM file not found: {PBF_PATH}"
         )
 
-    print(
-        "Reading India-wide OpenStreetMap nodes...",
-        flush=True
-    )
+    print("Reading India OpenStreetMap data...")
 
-    handler = IndiaBusinessHandler(seen)
+    handler = IndiaBusinessHandler()
 
-    # Memory-efficient nodes-only extraction.
-    handler.apply_file(PBF_FILE)
+    handler.apply_file(str(PBF_PATH), locations=False)
 
-    print("Total OSM nodes processed:", handler.total_nodes)
-    print("Total new businesses found:", handler.total_found)
+    print("\nOpenStreetMap business records:", handler.total_businesses)
 
-    print("No website:", handler.counts["no_website"])
-    print("Weak website:", handler.counts["weak_website"])
-    print("Incomplete website:", handler.counts["incomplete_website"])
-    print("Good website:", handler.counts["good_website"])
+    for name, count in handler.counts.items():
+        print(f"{name}: {count}")
 
-    candidates = (
-        handler.no_website
-        + handler.weak_website
-        + handler.incomplete_website
-        + handler.good_website
-    )
+    candidates = []
 
-    print("Total sampled candidates:", len(candidates))
+    for pool_name in (
+        "no_website",
+        "weak_website",
+        "incomplete_website",
+        "good_website"
+    ):
+        candidates.extend(handler.pools[pool_name])
+
+    random.shuffle(candidates)
+
+    print("Sampled candidates:", len(candidates))
 
     return candidates
 
 
 # --------------------------------------------------
-# WEBSITE CONTACT FINDER
+# DUPLICATE HISTORY
 # --------------------------------------------------
 
-class ContactParser(HTMLParser):
+def load_history():
+
+    history = set()
+
+    if not HISTORY_PATH.exists():
+        return history
+
+    with open(
+        HISTORY_PATH,
+        "r",
+        encoding="utf-8"
+    ) as file:
+
+        for line in file:
+            value = line.strip()
+
+            if value:
+                # Old plain OSM IDs remain supported.
+                history.add(value)
+
+    return history
+
+
+def business_signatures(row):
+
+    signatures = set()
+
+    name = normalize_text(row.get("name", ""))
+
+    if not name:
+        return signatures
+
+    phone = normalize_phone(row.get("phone", ""))
+    email = normalize_email(row.get("email", ""))
+    domain = website_domain(row.get("website", ""))
+    address = normalize_text(row.get("address", ""))
+    city = normalize_text(row.get("city", ""))
+
+    if phone:
+        signatures.add(f"phone:{name}|{phone}")
+
+    if email:
+        signatures.add(f"email:{name}|{email}")
+
+    if domain:
+        signatures.add(f"website:{name}|{domain}")
+
+    if address:
+        signatures.add(f"address:{name}|{address}")
+
+    # Name + city alone is intentionally not used:
+    # different branches may have the same name.
+
+    return signatures
+
+
+def already_seen(row, history):
+
+    osm_id = clean_text(row.get("osm_id", ""))
+
+    if osm_id and osm_id in history:
+        return True
+
+    return bool(business_signatures(row) & history)
+
+
+def save_history(rows):
+
+    existing = load_history()
+
+    new_values = set()
+
+    for row in rows:
+
+        osm_id = clean_text(row.get("osm_id", ""))
+
+        if osm_id:
+            # Keep the old plain-ID format compatible.
+            new_values.add(osm_id)
+
+        new_values.update(business_signatures(row))
+
+    combined = existing | new_values
+
+    with open(
+        HISTORY_PATH,
+        "w",
+        encoding="utf-8"
+    ) as file:
+
+        for value in sorted(combined):
+            file.write(value + "\n")
+
+    print("Duplicate history entries:", len(combined))
+
+
+# --------------------------------------------------
+# HTML PARSER
+# --------------------------------------------------
+
+class PageParser(HTMLParser):
 
     def __init__(self):
-
         super().__init__()
 
-        self.emails = set()
-        self.phones = set()
-        self.links = set()
+        self.links = []
+        self.emails = []
+        self.phones = []
 
     def handle_starttag(self, tag, attrs):
 
-        attrs = dict(attrs)
-        href = clean(attrs.get("href"))
+        attributes = dict(attrs)
 
-        if tag == "a" and href:
+        href = clean_text(attributes.get("href", ""))
 
-            if href.lower().startswith("mailto:"):
+        if not href:
+            return
 
-                self.emails.add(
-                    href[7:].split("?")[0]
-                )
+        if href.lower().startswith("mailto:"):
+            email = normalize_email(
+                href.split(":", 1)[1].split("?", 1)[0]
+            )
 
-            elif href.lower().startswith("tel:"):
+            if email:
+                self.emails.append(email)
 
-                self.phones.add(href[4:])
+        elif href.lower().startswith("tel:"):
+            phone = normalize_phone(
+                href.split(":", 1)[1]
+            )
 
-            else:
+            if phone:
+                self.phones.append(phone)
 
-                self.links.add(href)
+        elif tag.lower() == "a":
+            self.links.append(href)
 
-    def handle_data(self, data):
 
-        text = clean(data)
+# --------------------------------------------------
+# WEBSITE REQUESTS AND ROBOTS POLICY
+# --------------------------------------------------
 
-        for email in re.findall(
-            r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
-            text
-        ):
+def make_request(url, timeout=REQUEST_TIMEOUT):
 
-            self.emails.add(email)
+    request = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": USER_AGENT,
+            "Accept": "text/html,application/xhtml+xml"
+        }
+    )
 
-        for phone in re.findall(
-            r"(?:\+91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}",
-            text
-        ):
+    return urllib.request.urlopen(
+        request,
+        timeout=timeout
+    )
 
-            self.phones.add(phone)
+
+def get_robots_policy(website):
+
+    parsed = urlparse(website)
+
+    robots_url = (
+        f"{parsed.scheme}://{parsed.netloc}/robots.txt"
+    )
+
+    parser = urllib.robotparser.RobotFileParser()
+    parser.set_url(robots_url)
+
+    try:
+
+        with make_request(
+            robots_url,
+            timeout=ROBOTS_TIMEOUT
+        ) as response:
+
+            content = response.read(100_000).decode(
+                "utf-8",
+                errors="replace"
+            )
+
+            parser.parse(content.splitlines())
+
+            return parser, "available"
+
+    except urllib.error.HTTPError as error:
+
+        if error.code == 404:
+            parser.parse([])
+            return parser, "not_found"
+
+        if error.code in (401, 403):
+            return None, "restricted"
+
+        return None, f"http_error_{error.code}"
+
+    except Exception:
+        return None, "could_not_check"
+
+
+def robots_allows(parser, url):
+
+    try:
+        return parser.can_fetch(USER_AGENT, url)
+    except Exception:
+        return False
 
 
 def fetch_page(url):
 
     try:
 
-        request = urllib.request.Request(
-            url,
-            headers={"User-Agent": USER_AGENT}
-        )
-
-        with urllib.request.urlopen(
-            request,
-            timeout=7
-        ) as response:
+        with make_request(url) as response:
 
             content_type = response.headers.get(
-                "Content-Type", ""
-            )
+                "Content-Type",
+                ""
+            ).lower()
 
-            if "text/html" not in content_type.lower():
-                return ""
+            if (
+                "text/html" not in content_type
+                and "application/xhtml+xml" not in content_type
+            ):
+                return "not_html", "", None
 
-            return response.read(
-                350000
-            ).decode(
+            data = response.read(MAX_PAGE_BYTES)
+
+            text = data.decode(
                 "utf-8",
-                errors="ignore"
+                errors="replace"
             )
+
+            return "success", text, response.status
+
+    except urllib.error.HTTPError as error:
+
+        return "http_error", "", error.code
+
+    except (urllib.error.URLError, TimeoutError, socket.timeout):
+
+        return "network_error", "", None
 
     except Exception:
 
-        return ""
+        return "network_error", "", None
 
 
-def can_visit_website(base_url, page_url):
+# --------------------------------------------------
+# CONTACT EXTRACTION
+# --------------------------------------------------
+
+EMAIL_PATTERN = re.compile(
+    r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b",
+    re.IGNORECASE
+)
+
+PHONE_PATTERN = re.compile(
+    r"(?<!\w)(?:\+?\d[\d\s()./-]{7,18}\d)(?!\w)"
+)
+
+
+def extract_contacts(html):
+
+    parser = PageParser()
+
+    try:
+        parser.feed(html)
+    except Exception:
+        pass
+
+    emails = set(parser.emails)
+    phones = set(parser.phones)
+
+    for match in EMAIL_PATTERN.findall(html):
+        email = normalize_email(match)
+
+        if email:
+            emails.add(email)
+
+    for match in PHONE_PATTERN.findall(html):
+
+        phone = normalize_phone(match)
+
+        if phone:
+            phones.add(phone)
+
+    return emails, phones, parser.links
+
+
+def choose_email(emails):
+
+    filtered = []
+
+    unwanted = (
+        "example.com",
+        "domain.com",
+        "yourname",
+        "wixpress.com"
+    )
+
+    for email in emails:
+
+        if any(item in email.lower() for item in unwanted):
+            continue
+
+        filtered.append(email)
+
+    return sorted(filtered)[0] if filtered else ""
+
+
+def choose_phone(phones):
+
+    valid = []
+
+    for phone in phones:
+
+        normalized = normalize_phone(phone)
+
+        if normalized:
+            valid.append(normalized)
+
+    return sorted(valid)[0] if valid else ""
+
+
+def check_email_mx(email):
+
+    if not email or "@" not in email:
+        return "Not available"
+
+    domain = email.split("@", 1)[1]
 
     try:
 
-        robots_url = urljoin(
-            base_url + "/",
-            "robots.txt"
-        )
+        resolver = dns.resolver.Resolver()
+        resolver.timeout = 1.5
+        resolver.lifetime = 2.5
 
-        request = urllib.request.Request(
-            robots_url,
-            headers={"User-Agent": USER_AGENT}
-        )
+        resolver.resolve(domain, "MX")
 
-        with urllib.request.urlopen(
-            request,
-            timeout=5
-        ) as response:
+        return "MX found"
 
-            robots_text = response.read(
-                100000
-            ).decode(
-                "utf-8",
-                errors="ignore"
-            )
+    except dns.resolver.NXDOMAIN:
+        return "No valid email domain"
 
-        parser = urllib.robotparser.RobotFileParser()
-
-        parser.set_url(robots_url)
-        parser.parse(robots_text.splitlines())
-
-        return parser.can_fetch(
-            USER_AGENT,
-            page_url
-        )
-
-    except HTTPError as error:
-
-        if error.code == 404:
-            return True
-
-        return False
+    except dns.resolver.NoAnswer:
+        return "No MX record"
 
     except Exception:
+        return "Could not verify"
 
-        return False
+
+# --------------------------------------------------
+# WEBSITE ENRICHMENT
+# --------------------------------------------------
+
+def contact_page_candidates(homepage, links):
+
+    selected = []
+
+    keywords = (
+        "contact",
+        "about",
+        "support",
+        "reach-us",
+        "get-in-touch"
+    )
+
+    base_domain = website_domain(homepage)
+
+    for link in links:
+
+        try:
+            full_url = urljoin(homepage, link)
+            parsed = urlparse(full_url)
+
+            if parsed.scheme not in ("http", "https"):
+                continue
+
+            if website_domain(full_url) != base_domain:
+                continue
+
+            path = parsed.path.lower()
+
+            if any(keyword in path for keyword in keywords):
+
+                if full_url not in selected:
+                    selected.append(full_url)
+
+            if len(selected) >= MAX_CONTACT_PAGES:
+                break
+
+        except Exception:
+            continue
+
+    return selected
 
 
-def enrich_business(row):
+def enrich_website(row):
 
-    row["phone"] = normalize_phone(row["phone"])
-    row["email"] = normalize_email(row["email"])
-
-    if row["email"]:
-
-        if valid_email_domain(row["email"]):
-
-            row["email_status"] = "MX valid"
-
-        else:
-
-            row["email"] = ""
-            row["email_status"] = "Invalid or no MX"
-
-    website = row["website"]
+    website = row.get("website", "")
 
     if not website:
+
+        row["website_status"] = "Not listed in OSM"
+        row["website_opportunity"] = "Potential - Website Not Listed"
+        row["opportunity_reason"] = (
+            "Website URL is not listed in OpenStreetMap. "
+            "The business website needs manual verification."
+        )
+
         return row
 
-    homepage = fetch_page(website)
+    robots, robots_status = get_robots_policy(website)
 
-    if not homepage:
+    if robots_status == "restricted":
 
-        row["_website_status"] = "Not accessible"
+        row["website_status"] = "Access restricted - robots.txt"
+        row["website_opportunity"] = "Potential - Access Restricted"
+        row["opportunity_reason"] = (
+            "Website blocks automated access through robots policy."
+        )
+
         return row
 
-    row["_website_status"] = "Accessible"
+    if robots_status not in ("available", "not_found"):
 
-    pages_to_check = [website]
+        row["website_status"] = "Could not verify - robots policy"
+        row["website_opportunity"] = "Potential - Needs Verification"
+        row["opportunity_reason"] = (
+            "Could not safely verify the website access policy."
+        )
 
-    parser = ContactParser()
-    parser.feed(homepage)
+        return row
 
-    for link in parser.links:
+    if not robots_allows(robots, website):
 
-        text = link.lower()
+        row["website_status"] = "Not checked - robots policy"
+        row["website_opportunity"] = "Potential - Needs Verification"
+        row["opportunity_reason"] = (
+            "Website robots policy does not allow this page to be checked."
+        )
 
-        if any(word in text for word in (
-            "contact", "about", "support"
-        )):
+        return row
 
-            full_url = urljoin(
-                website + "/",
-                link
-            )
+    status, html, http_code = fetch_page(website)
 
-            if (
-                urlparse(full_url).netloc
-                == urlparse(website).netloc
-            ):
+    if status == "http_error":
 
-                pages_to_check.append(full_url)
+        if http_code in (401, 403):
+            row["website_status"] = f"Access restricted (HTTP {http_code})"
+            row["website_opportunity"] = "Potential - Access Restricted"
 
-    for page_url in pages_to_check[:2]:
+        elif http_code in (404, 410):
+            row["website_status"] = f"Unavailable response (HTTP {http_code})"
+            row["website_opportunity"] = "Potential - Website Unavailable"
 
-        if not can_visit_website(website, page_url):
+        elif http_code == 429:
+            row["website_status"] = "Rate limited (HTTP 429)"
+            row["website_opportunity"] = "Potential - Needs Verification"
+
+        else:
+            row["website_status"] = f"HTTP error ({http_code})"
+            row["website_opportunity"] = "Potential - Needs Verification"
+
+        row["opportunity_reason"] = (
+            "The website returned an HTTP error. "
+            "This does not by itself prove the website is permanently broken."
+        )
+
+        return row
+
+    if status == "network_error":
+
+        row["website_status"] = "Could not verify"
+        row["website_opportunity"] = "Potential - Needs Verification"
+        row["opportunity_reason"] = (
+            "A network or timeout error prevented website verification."
+        )
+
+        return row
+
+    if status == "not_html":
+
+        row["website_status"] = "Accessible - non-HTML response"
+        row["website_opportunity"] = "Potential - Needs Verification"
+        row["opportunity_reason"] = (
+            "The website responded, but its homepage was not an HTML page."
+        )
+
+        return row
+
+    row["website_status"] = "Accessible"
+
+    emails, phones, links = extract_contacts(html)
+
+    # Only check a small number of relevant contact pages.
+    contact_pages = contact_page_candidates(website, links)
+
+    for page_url in contact_pages:
+
+        if not robots_allows(robots, page_url):
             continue
 
-        html = fetch_page(page_url)
+        page_status, page_html, _ = fetch_page(page_url)
 
-        if not html:
+        if page_status != "success":
             continue
 
-        parser = ContactParser()
-        parser.feed(html)
+        page_emails, page_phones, _ = extract_contacts(page_html)
 
-        if not row["email"]:
+        emails.update(page_emails)
+        phones.update(page_phones)
 
-            for found_email in parser.emails:
-
-                found_email = normalize_email(found_email)
-
-                if (
-                    found_email
-                    and valid_email_domain(found_email)
-                ):
-
-                    row["email"] = found_email
-                    row["email_source"] = page_url
-                    row["email_status"] = "MX valid"
-
-                    break
-
-        if not row["phone"]:
-
-            for found_phone in parser.phones:
-
-                phone = normalize_phone(found_phone)
-
-                if phone:
-
-                    row["phone"] = phone
-                    row["phone_source"] = page_url
-
-                    break
-
-        if row["phone"] and row["email"]:
+        if row.get("email") and row.get("phone"):
             break
+
+    if not row.get("email"):
+
+        found_email = choose_email(emails)
+
+        if found_email:
+            row["email"] = found_email
+            row["email_source"] = "Business website"
+
+    if not row.get("phone"):
+
+        found_phone = choose_phone(phones)
+
+        if found_phone:
+            row["phone"] = found_phone
+            row["phone_source"] = "Business website"
+
+    if row.get("email"):
+        row["email_status"] = check_email_mx(row["email"])
+    else:
+        row["email_status"] = "Not found"
+
+    if not row.get("phone") and not row.get("email"):
+
+        row["website_opportunity"] = "Review - No Contact Details Found"
+        row["opportunity_reason"] = (
+            "Website is accessible, but phone and email were not found "
+            "on the checked pages."
+        )
+
+    elif not row.get("phone") or not row.get("email"):
+
+        row["website_opportunity"] = "Review - Incomplete Online Presence"
+        row["opportunity_reason"] = (
+            "Website is accessible, but one contact detail is missing."
+        )
+
+    else:
+
+        row["website_opportunity"] = "Low - Good Online Presence"
+        row["opportunity_reason"] = (
+            "Website is accessible and both phone and email were found."
+        )
 
     return row
 
 
 # --------------------------------------------------
-# WEBSITE OPPORTUNITY SCORING
+# LEAD SCORING AND PRIORITY
 # --------------------------------------------------
+
+def opportunity_rank(row):
+
+    opportunity = row.get("website_opportunity", "")
+
+    if opportunity == "Potential - Website Not Listed":
+        return 0
+
+    if opportunity == "Potential - Website Unavailable":
+        return 1
+
+    if opportunity == "Potential - Access Restricted":
+        return 2
+
+    if opportunity == "Potential - Needs Verification":
+        return 3
+
+    if opportunity.startswith("Review -"):
+        return 4
+
+    if opportunity == "Low - Good Online Presence":
+        return 5
+
+    return 6
+
 
 def score_business(row):
 
-    score = 0
+    rank = opportunity_rank(row)
 
-    website = row.get("website", "")
-    website_status = row.get("_website_status", "")
+    base_scores = {
+        0: 55,
+        1: 48,
+        2: 42,
+        3: 36,
+        4: 28,
+        5: 12,
+        6: 10
+    }
 
-    if not website:
+    score = base_scores.get(rank, 10)
 
+    if row.get("phone"):
         score += 10
-        opportunity = "High - No Website"
 
-    elif website_status == "Not accessible":
+    if row.get("email"):
+        score += 12
 
-        score += 8
-        opportunity = "High - Website Not Accessible"
+    if row.get("address"):
+        score += 5
 
-    elif not row["phone"] or not row["email"]:
+    if row.get("city"):
+        score += 3
 
-        score += 6
-        opportunity = "Medium - Incomplete Online Presence"
+    if row.get("category") in (
+        "shop",
+        "amenity",
+        "office",
+        "healthcare",
+        "craft",
+        "tourism"
+    ):
+        score += 5
 
-    else:
+    return min(score, 100)
 
-        score += 2
-        opportunity = "Low - Website Available"
 
-    if row["phone"]:
-        score += 2
+def set_contact_priority(row):
 
-    if row["email"]:
-        score += 2
+    has_phone = bool(row.get("phone"))
+    has_email = bool(row.get("email"))
 
-    if row["address"]:
-        score += 1
+    if has_phone and has_email:
+        return "High"
 
-    if row["phone"] and row["email"]:
-        contact_priority = "High - Phone + Email"
+    if has_phone or has_email:
+        return "Medium"
 
-    elif row["phone"] or row["email"]:
-        contact_priority = "Medium - One Contact"
+    return "Low"
 
-    else:
-        contact_priority = "Low - No Contact"
 
-    row["contact_priority"] = contact_priority
-    row["lead_score"] = score
+def prepare_lead(row):
 
-    row["_website_opportunity"] = opportunity
+    row = dict(row)
+
+    row.setdefault("website_status", "")
+    row.setdefault("website_opportunity", "")
+    row.setdefault("opportunity_reason", "")
+    row.setdefault("email_status", "")
+
+    row = enrich_website(row)
+
+    row["contact_priority"] = set_contact_priority(row)
+    row["lead_score"] = score_business(row)
+
+    row["_opportunity_rank"] = opportunity_rank(row)
 
     return row
 
 
 # --------------------------------------------------
-# DUPLICATE CHECKING
+# DUPLICATE REMOVAL
 # --------------------------------------------------
-
-def business_signatures(row):
-
-    name = clean(row.get("name")).lower()
-    phone = clean(row.get("phone"))
-    email = clean(row.get("email")).lower()
-
-    domain = website_domain(row.get("website"))
-
-    address = re.sub(
-        r"\s+",
-        " ",
-        clean(row.get("address")).lower()
-    )
-
-    signatures = []
-
-    if name and phone:
-        signatures.append(
-            "phone:" + name + "|" + phone
-        )
-
-    if name and email:
-        signatures.append(
-            "email:" + name + "|" + email
-        )
-
-    if name and domain:
-        signatures.append(
-            "website:" + name + "|" + domain
-        )
-
-    if name and address:
-        signatures.append(
-            "address:" + name + "|" + address
-        )
-
-    return signatures
-
 
 def remove_duplicate_records(rows):
 
-    unique = []
-    seen = set()
+    unique_rows = []
+    seen_osm_ids = set()
+    seen_signatures = set()
 
     for row in rows:
 
-        osm_id = clean(row.get("osm_id"))
+        osm_id = clean_text(row.get("osm_id", ""))
 
-        keys = []
-
-        if osm_id:
-            keys.append("osm:" + osm_id)
-
-        keys.extend(
-            business_signatures(row)
-        )
-
-        if any(key in seen for key in keys):
+        if osm_id and osm_id in seen_osm_ids:
             continue
 
-        seen.update(keys)
-        unique.append(row)
+        signatures = business_signatures(row)
 
-    return unique
+        if signatures & seen_signatures:
+            continue
+
+        if osm_id:
+            seen_osm_ids.add(osm_id)
+
+        seen_signatures.update(signatures)
+        unique_rows.append(row)
+
+    return unique_rows
 
 
 # --------------------------------------------------
 # CSV HELPERS
 # --------------------------------------------------
 
-def read_csv_file(filename):
+def read_csv_file(path):
 
-    if not os.path.exists(filename):
+    if not path.exists():
         return []
 
+    rows = []
+
+    try:
+
+        with open(
+            path,
+            "r",
+            encoding="utf-8-sig",
+            newline=""
+        ) as file:
+
+            reader = csv.DictReader(file)
+
+            for old_row in reader:
+
+                row = {}
+
+                for field in FIELDS:
+                    row[field] = clean_text(
+                        old_row.get(field, "")
+                    )
+
+                rows.append(row)
+
+    except Exception as error:
+
+        print(f"Could not read {path.name}: {error}")
+
+    return rows
+
+
+def write_csv_file(path, rows):
+
+    path.parent.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
     with open(
-        filename,
-        "r",
-        encoding="utf-8-sig",
-        newline=""
-    ) as file:
-
-        reader = csv.DictReader(file)
-
-        return [
-            {
-                field: clean(row.get(field))
-                for field in FIELDS
-            }
-            for row in reader
-        ]
-
-
-def write_csv_file(filename, rows):
-
-    with open(
-        filename,
+        path,
         "w",
         encoding="utf-8-sig",
         newline=""
@@ -863,159 +1160,160 @@ def write_csv_file(filename, rows):
 
         for row in rows:
 
-            clean_row = {
-                field: row.get(field, "")
-                for field in FIELDS
-            }
+            clean_row = {}
 
-            clean_row["phone"] = str(
-                clean_row["phone"] or ""
-            )
+            for field in FIELDS:
+                clean_row[field] = clean_text(
+                    row.get(field, "")
+                )
 
             writer.writerow(clean_row)
 
 
+def dashboard_sort_key(row):
+
+    try:
+        score = int(row.get("lead_score", 0) or 0)
+    except (ValueError, TypeError):
+        score = 0
+
+    return (
+        opportunity_rank(row),
+        -score,
+        normalize_text(row.get("name", ""))
+    )
+
+
 # --------------------------------------------------
-# MAIN AGENT
+# MAIN
 # --------------------------------------------------
 
 def main():
 
     print("=" * 55)
-    print("BUSINESSFINDERAI - WEBSITE OPPORTUNITY AGENT")
+    print("BUSINESSFINDERAI - INDIA LEAD ENGINE")
     print("=" * 55)
 
-    seen_ids = load_history()
+    started_at = datetime.now(timezone.utc)
 
-    candidates = get_osm_data(seen_ids)
+    history = load_history()
+
+    print("Previously saved history entries:", len(history))
+
+    candidates = get_osm_data()
 
     processed = []
+    skipped_history = 0
 
-    print(
-        "Checking website and contact details...",
-        flush=True
-    )
+    print("\nChecking business opportunities...")
 
-    for index, row in enumerate(
-        candidates,
-        start=1
-    ):
+    for index, candidate in enumerate(candidates, start=1):
 
-        print(
-            f"Checking {index}/{len(candidates)}: {row['name']}",
-            flush=True
-        )
+        # First skip businesses whose OSM ID or known contact
+        # signatures already exist in previous history.
+        if already_seen(candidate, history):
+            skipped_history += 1
+            continue
 
         try:
 
-            row = enrich_business(row)
-            row = score_business(row)
+            lead = prepare_lead(candidate)
 
-            processed.append(row)
+            # Check again after website enrichment because
+            # website/contact details may reveal duplicates.
+            if already_seen(lead, history):
+                skipped_history += 1
+                continue
+
+            processed.append(lead)
 
         except Exception as error:
 
             print(
-                "Business skipped:",
-                error,
-                flush=True
+                f"Could not process {candidate.get('name', 'Unknown')}: "
+                f"{error}"
             )
 
-        time.sleep(0.2)
+        if index % 50 == 0 or index == len(candidates):
 
-    # Website opportunity first.
-    def opportunity_priority(row):
+            print(
+                f"Processed {index}/{len(candidates)} candidates"
+            )
 
-        status = row.get("_website_opportunity", "")
+    # Remove duplicates within today's processed candidates.
+    processed = remove_duplicate_records(processed)
 
-        if status == "High - No Website":
-            return 4
+    # Website opportunity first, then lead score.
+    processed.sort(key=dashboard_sort_key)
 
-        if status == "High - Website Not Accessible":
-            return 3
+    selected = processed[:LIMIT]
 
-        if status == "Medium - Incomplete Online Presence":
-            return 2
+    # Daily CSV contains only today's selected leads.
+    write_csv_file(DAILY_PATH, selected)
 
-        return 1
+    # Save OSM IDs and business signatures for future duplicate checks.
+    save_history(selected)
 
-    processed.sort(
-        key=lambda row: (
-            opportunity_priority(row),
-            row["lead_score"],
-            bool(row["phone"] and row["email"])
-        ),
-        reverse=True
+    # Preserve the existing dashboard records.
+    old_dashboard = read_csv_file(DASHBOARD_PATH)
+
+    combined_dashboard = remove_duplicate_records(
+        old_dashboard + selected
     )
 
-    processed = remove_duplicate_records(
-        processed
-    )
-
-    today_leads = processed[:LIMIT]
+    combined_dashboard.sort(key=dashboard_sort_key)
 
     write_csv_file(
-        OUTPUT,
-        today_leads
+        DASHBOARD_PATH,
+        combined_dashboard
     )
 
-    # Save only selected IDs.
-    for row in today_leads:
-        seen_ids.add(row["osm_id"])
-
-    save_history(seen_ids)
-
-    # Preserve previous dashboard data.
-    old_public_leads = read_csv_file(
-        PUBLIC_OUTPUT
-    )
-
-    combined = old_public_leads + today_leads
-
-    combined = remove_duplicate_records(
-        combined
-    )
-
-    combined.sort(
-        key=lambda row: int(row.get("lead_score") or 0),
-        reverse=True
-    )
-
-    write_csv_file(
-        PUBLIC_OUTPUT,
-        combined
-    )
-
+    # Summary
     no_website = sum(
-        1 for row in today_leads
-        if not row["website"]
+        1 for row in selected
+        if row.get("website_status") == "Not listed in OSM"
     )
 
     high_opportunity = sum(
-        1 for row in today_leads
-        if row.get("_website_opportunity", "")
-        in (
-            "High - No Website",
-            "High - Website Not Accessible"
-        )
+        1 for row in selected
+        if opportunity_rank(row) <= 2
     )
 
-    print("=" * 55)
-    print("INDIA BUSINESSFINDERAI REPORT")
-    print("New leads:", len(today_leads))
-    print("No website:", no_website)
-    print("High website opportunity:", high_opportunity)
-    print(
-        "High contact priority:",
-        sum(
-            1 for row in today_leads
-            if row["contact_priority"] == "High - Phone + Email"
-        )
+    with_phone = sum(
+        1 for row in selected
+        if row.get("phone")
     )
-    print("Total dashboard leads:", len(combined))
-    print("CSV saved:", OUTPUT)
-    print("Dashboard data saved:", PUBLIC_OUTPUT)
+
+    with_email = sum(
+        1 for row in selected
+        if row.get("email")
+    )
+
+    duration = (
+        datetime.now(timezone.utc) - started_at
+    ).total_seconds()
+
+    print("\n" + "=" * 55)
+    print("BUSINESSFINDERAI - DAILY REPORT")
     print("=" * 55)
+
+    print("Candidates sampled:", len(candidates))
+    print("Skipped from previous history:", skipped_history)
+    print("New unique candidates processed:", len(processed))
+    print("Today's selected leads:", len(selected))
+    print("Website not listed in OSM:", no_website)
+    print("High website opportunity:", high_opportunity)
+    print("Leads with phone:", with_phone)
+    print("Leads with email:", with_email)
+    print("Dashboard total:", len(combined_dashboard))
+    print(f"Total duration: {duration / 60:.2f} minutes")
+
+    print("\nFiles created:")
+    print("-", DAILY_CSV)
+    print("-", DASHBOARD_CSV)
+    print("-", HISTORY_FILE)
+
+    print("\nBusinessFinderAI run completed.")
 
 
 if __name__ == "__main__":
