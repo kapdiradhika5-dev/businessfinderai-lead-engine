@@ -1,11 +1,15 @@
+address:aapla bazar|near patil tower nh548h sawantwadi
 address:adalia boutique|vinayaka layout main road bangalore
 address:adidas|sardar patel marg civil lines prayagraj
 address:ahmcvl|ghzh panki road sh33 daltonganj
 address:ajay|ponnamgode karakkurussi road karakurussi
 address:ajit khalsa dhaba|chattarpur main road
 address:akshaya center|guruvayoor althara ponnani road punnayoorkulam
+address:akshaya|ekarool
 address:al rehmani resturant|mumbai
 address:amrut super market|kolhemala road pune narayangaon
+address:anchorage|indira gandhi road willingdon island ernakulam kochi
+address:anganawady kallidikkal|ayoor ittikara road oyoor
 address:anganvady kosadi|kosady kottaramkada road kosadi
 address:anganwadi|856 krishna bagh colony indore indore
 address:anganwadi|matkuli pachmarhi highway narmadapuram pachmarhi
@@ -15,6 +19,7 @@ address:b m stores|b m stores sasathamnada ampalathumbhagom po kollam
 address:babita hand embroidery|398 durga marg
 address:bajaj appliances|e 133
 address:bank of india|chandekar bhavan opposite dr baba saheb ambedkar open theater akola
+address:bhandari restaurant|laxman jhula
 address:bharath machine tools|kasargod kannur calicut highway kasaragod
 address:black store|alwar
 address:block development office purushottampur|college square ganjam purushottampur
@@ -38,6 +43,7 @@ address:digambar jain bada mandir lakhnadon|beside jain dharmashala near bazar c
 address:district hospital blood bank azamgarh|azamgarh
 address:district veterinary centre thrissur|district veteinary complex paravattani nellikunnu rd thrissur
 address:divisional forest office|athira nagar puthuppariyarm palakkad
+address:dr hari har roy clinic|16 1 kshetra mitra lane salkia golabari
 address:dr mahesh shah clinc|49 12 patnipura square indore
 address:dr s k bichuliya clinic|2 a ganga nagar dhar road indore
 address:elite education and immigration|122 amloh khanna road scf 12 gtb market ludhiana khanna
@@ -46,7 +52,9 @@ address:fiction jam room and recording studio|1st floor best bus depot building 
 address:franklin s best bakery|380 3a nagalamman nagar ranipet tiruttani road arakkonam
 address:fruit crush cafe|in front of nagpur hospital beside satyam restaurant raisen road patel nagar bhopal m p bhopal
 address:gauribidanur town police station|gauribidanur
+address:general hospital blood bank morbi|general hospital morbi rajkot
 address:general store 1|1 254 gandhi booma street east godavari district madhurapudi
+address:giani ice cream|b 3 66 opposie b 2 mar gregorios church janak puri new delhi
 address:goverment hospital chandbehda|phc chandbehda
 address:goverment hospital chanderi|community health center chanderi
 address:government hospital benakanahalli|davangere benakanahalli
@@ -60,15 +68,20 @@ address:kudla beach|73 kantha complex dr rajkumar road 3rd stage rajajinaga bang
 address:lasam super market|hathiramji colony air bypass road
 address:leanin tree art cafe|23 patalamma street basavanagudi bangalore
 address:lekshmi edibles|lekshmi edibles chengamanadu kollam
+address:life line blood bank ghaziabad|nehru nagar
 address:m s motors|hyderabad
 address:metro hospital and heart institute s blood bank|sector 12
+address:moriya civil hospital|near water tank moriya on mumanvas road
+address:murti health care pvt ltd|44 a saket
 address:ncm mineral water supply|halasahalli road
 address:orcha homestay|chungam road
 address:pangna phc|pangna
+address:panna sweets|brahmo samaj road
 address:petrol pump|chikani alwar raj
 address:phc amruthaluru|guntur
 address:phc boduluru|boduluru village ending
 address:phc doddamettikurke|doddamethikere
+address:phc korra|saharsa
 address:phc kurawar|primary health center
 address:phc paldi|mahilpur phagwara road near punjab national bank vpo paldi
 address:phc pamarru|opp zpp school pamarru
@@ -83,6 +96,8 @@ address:rajveer collection|shop no 21 shri krishna nagar sagar co operative hous
 address:ravi cardiac and diabetic care center|gbc road opp bank of india ponnur
 address:ravi laundary drycleaner|sr no 28 4 3 1 9
 address:reenix sports india pvt ltd|101 7th cross 11th main rd bhadrappa layout prakash nagar rajaji nagar bangalore
+address:rekha hardware and ceramics|8 ullal main road bengaluru
+address:rohan multi services|main road of rangangoan ranjangoan
 address:rohit chemist|20 1 janjeerwala square indore
 address:rural development trust hospital blood bank|kadiri road bathalapalli
 address:samartha drycleaners|shop no 13
@@ -92,14 +107,19 @@ address:savage chinese and american bistroo|complex vanasthalipuram
 address:shanghai times|whitefield main road mahadevpura devasandra industrial estate krishnarajapuram bengaluru bengaluru
 address:shelter finance|choondal
 address:shivanna provision store|476 krishna rajendra hospital road mysore
+address:sipor phc|tower chowk sipor nr talab
 address:sk self drive cars tirupati|tirumala bypass road tirupati
 address:sri datta jali maker|datta mandir road
+address:st xaviers hospital|opp rcm church kurnool road
+address:star shamina shop near sanath nagar|navarang stidio sanath nagar
 address:star telecom centre|32 a
 address:state bank of india koruthodu|mundakayam elavungal state highway pallippady
+address:sub district rural hospital blood bank|aheri at post and tal aheri gadchiroli
 address:sunny s dental dtc office thrissur|ayyanthole
 address:suraj electricals|samaspur main road gurugram samaspur village
 address:taluk supply office pathanapuram|17 1311 pathanapuram
 address:tara bhutanese restaurant|3a majnu ka teela
+address:thai moogambigai blood bank and clinical laboratory|no 3 ground floor northern side javahar cross street gandhi nagar
 address:thalassery restaurant|chandra layout marathahalli bengaluru bangalore
 address:the homeopathy|ug 5 classic centre tilak nagar indore
 address:the sobo nail salon|appasaheb marathe marg
@@ -111,25 +131,32 @@ address:vaishali saree center|2 santosh nagar kabilpor bazar navsari
 address:vanitha fashion jewellery|kottiyam
 address:varuna phc|opp to varuna lake varuna village mysore taluk suttur main road
 address:vettor service co operative bank|varkala kadakkavoor chirayinkeezhu road puthenchantha
+address:vinny s|2467 24th cross road banashankari bangalore
 address:white house|77
 address:zina cottage|near lions school munnar
+email:bhandari restaurant|bhandarirestaurant@gmail.com
 email:darbar organic hotel|darbarorganichotel@gmail.com
 email:district veterinary centre thrissur|dvctsr.ahd@kerala.gov.in
 email:petrol pump|rizwan.rizzu26@gmail.com
 email:rainbow blood bank|rainbowbloodbank.nagpur@gmail.com
+email:sub district rural hospital blood bank|ms.sdhaheri@gmail.com
 email:sunny s dental dtc office thrissur|dtctcr.mvd@kerala.gov.in
 email:taluk supply office pathanapuram|tsopathanapuram@gmail.com
 email:thakur sports|niteshthakur7march@gmail.com
 email:thekkumpuram residency|tpmresidency@gmail.com
 email:unique honda|uniquehonda2009@gmail.com
 node/10080050121
+node/10278470291
+node/10603336953
 node/10648144248
 node/10721000650
 node/107291175
 node/10817732043
 node/10817742825
+node/10826945903
 node/10889463922
 node/10889899257
+node/11056199598
 node/11122258435
 node/11178147826
 node/11235990464
@@ -147,12 +174,14 @@ node/11697896366
 node/11725221203
 node/11749969889
 node/11763383784
+node/11786708703
 node/11868497395
 node/11900351768
 node/11900380051
 node/11917721682
 node/11945904569
 node/12040373950
+node/12091656883
 node/12172847005
 node/12180710587
 node/12329881121
@@ -165,16 +194,20 @@ node/125907877
 node/12592872620
 node/12615366282
 node/12647128102
+node/12651764013
 node/12672681266
 node/12725764363
 node/12791852448
+node/12944713683
 node/12956020022
 node/12991107406
 node/12991120404
 node/12993612753
 node/12993626270
+node/12993639032
 node/12993640845
 node/12993650530
+node/12993655940
 node/12993878513
 node/13040340835
 node/13092039489
@@ -200,6 +233,7 @@ node/13583153801
 node/13644931684
 node/1369674748
 node/13731868647
+node/13780550372
 node/13806081629
 node/13931041426
 node/13947777451
@@ -208,10 +242,13 @@ node/13972255326
 node/13999279777
 node/14018972712
 node/14029666325
+node/14045662231
 node/14072658772
 node/14102804257
+node/14110318346
 node/14159229701
 node/14183301368
+node/14188555470
 node/14252330722
 node/14289153000
 node/1429887846
@@ -781,6 +818,7 @@ node/440339389
 node/440360562
 node/4444204034
 node/4445192190
+node/4445212951
 node/4446322676
 node/4446518811
 node/4446553289
@@ -795,6 +833,7 @@ node/4578929190
 node/4618729289
 node/4676023589
 node/4885223275
+node/5076791291
 node/5136979522
 node/5147014553
 node/5227922744
@@ -804,6 +843,7 @@ node/5796441176
 node/5859257665
 node/5951501957
 node/59710905
+node/6089241787
 node/6128501130
 node/6187670278
 node/6202153627
@@ -821,10 +861,16 @@ node/631823296
 node/631823300
 node/632066507
 node/6342974655
+node/6474490785
 node/6611958497
 node/6751896632
 node/6778922529
+node/6778998161
 node/6888354481
+node/6888389389
+node/6888414952
+node/6888421988
+node/6892994570
 node/6897674835
 node/6897687985
 node/6926494062
@@ -836,9 +882,11 @@ node/695666627
 node/7018342625
 node/7025269434
 node/7028720845
+node/7036150343
 node/7037707168
 node/7066497233
 node/7072638951
+node/7074329090
 node/7101862014
 node/7106625135
 node/7108297731
@@ -851,13 +899,16 @@ node/7116293102
 node/7116293104
 node/7122178488
 node/7127949316
+node/7132099625
 node/7138534308
 node/7138660356
 node/7144783583
 node/7149258178
 node/7150766812
 node/7165506366
+node/7165606620
 node/7165606632
+node/7165606783
 node/7202876260
 node/7202979397
 node/7202986997
@@ -888,6 +939,7 @@ node/7691320829
 node/7694895162
 node/7708856916
 node/7724606837
+node/7746888041
 node/7810163424
 node/7813312594
 node/7865991261
@@ -907,6 +959,7 @@ node/8856195322
 node/8863351647
 node/8919834457
 node/8946557476
+node/8954561521
 node/8963758102
 node/8974358127
 node/9006132085
@@ -934,14 +987,18 @@ phone:a to z tools center|919848459277
 phone:adaptor hub|919650218917
 phone:adora bakery hotel catering|919947527430
 phone:ajit khalsa dhaba|911126801804
+phone:akshaya|91995383474
 phone:amit kulfi bhandar|917011963021
+phone:anchal cosmetics|9871785618
 phone:anganwadi|917888788421
+phone:apex stationers|918383802099
 phone:aphc chaksikander|916425250319
 phone:appollo diagnostic|919246984546
 phone:arnab book house|919674801764
 phone:ayda restaurant|08042124293
 phone:babita hand embroidery|919711401872
 phone:beauty parlour|917702171747
+phone:bhandari restaurant|9536112721
 phone:bharath machine tools|919895258236
 phone:bhavani mobile shop|919166723835
 phone:bismillah mini mart|919866547940
@@ -961,19 +1018,25 @@ phone:dgd bhorgarh|27781004
 phone:dhunadara phc|02699285332
 phone:digital point electronics service centre|9048892123
 phone:district hospital blood bank azamgarh|9719429909
+phone:dr hari har roy clinic|3326659094
 phone:elite education and immigration|919463228000
 phone:excise range office mala|914802895770
 phone:fiction jam room and recording studio|07303093862
+phone:fish curry rice|918446018133
 phone:franklin s best bakery|917708832301
 phone:fruit crush cafe|919109579103
 phone:gauribidanur town police station|918155286720
 phone:general store 1|9874512652
+phone:giani ice cream|8826023222
+phone:global tea cafe|917300501446
 phone:goverment hospital chandbehda|07141206985
 phone:goverment hospital chanderi|7547253345
 phone:government hospital benakanahalli|08188242278
 phone:government hospital nisarpur|07297266680
+phone:grand bell dry cleaner|9900901141
 phone:guntur cheneta vastralayam|919441465683
 phone:guru nanak store|919990132108
+phone:halal food|918688255433
 phone:hema jewellers|918448448741
 phone:hidden hair beauty salon|918848651607
 phone:hoolgera government hospital|08536201001
@@ -984,22 +1047,27 @@ phone:kudla beach|08032409844
 phone:lasam super market|9346234056
 phone:leanin tree art cafe|09886218518
 phone:lekshmi edibles|9633232731
+phone:life line blood bank ghaziabad|1202793989
 phone:longpuighat police station|9485495295
 phone:m s motors|919959200600
 phone:mahir|919967002223
+phone:moriya civil hospital|02739263010
 phone:my look beauty parlour|919972515553
 phone:neetu makeup studio|917830389729
 phone:orcha homestay|919946812824
 phone:padipura menatheril|919495162304
 phone:pangna phc|1907225000
+phone:panna sweets|913323979255
 phone:petrol pump|919799970888
 phone:phc boduluru|8864244088
 phone:phc doddamettikurke|08174251705
+phone:phc korra|916478285434
 phone:phc kurawar|07375244666
 phone:phc paldi|1882242142
 phone:phc pamarru|8857257043
 phone:phc thimmampalli|850272712
 phone:playboy beer garden zirakpur|918500664000
+phone:power star batteries|919843941567
 phone:primary health centre veeravalli|8656221533
 phone:punchiri dental clinic|914812422127
 phone:purohit chavana and sweet mart|919824013574
@@ -1010,6 +1078,8 @@ phone:ravi cardiac and diabetic care center|242414243415
 phone:ravi general store|919912487475
 phone:ravi laundary drycleaner|7028416317
 phone:reenix sports india pvt ltd|919886811390
+phone:rekha hardware and ceramics|99000000796
+phone:rohan multi services|02402551213
 phone:rohit chemist|8989699388
 phone:rural development trust hospital blood bank|08559244259
 phone:samartha drycleaners|09373352827
@@ -1021,12 +1091,18 @@ phone:shanghai times|918067266130
 phone:shelter finance|914885228496
 phone:shivanna provision store|08212520689
 phone:shri krishna plywood|919810601373
+phone:sipor phc|2761272630
 phone:sk self drive cars tirupati|918333983402
 phone:sri datta jali maker|9823296225
+phone:srija jewellers|919474515177
+phone:st xaviers hospital|8592233056
+phone:star shamina shop near sanath nagar|919010207424
 phone:star telecom centre|919811327478
 phone:state bank of india koruthodu|914828280229
+phone:sub district rural hospital blood bank|7133272072
 phone:suraj electricals|919555120575
 phone:taluk supply office pathanapuram|914752350020
+phone:thai moogambigai blood bank and clinical laboratory|4522535685
 phone:thalassery restaurant|918032713030
 phone:the homeopathy|9826054283
 phone:the sobo nail salon|9177158251
@@ -1039,6 +1115,7 @@ phone:vaishali saree center|918866403608
 phone:vanitha fashion jewellery|919539845401
 phone:varuna phc|08212599670
 phone:vettor service co operative bank|914712602756
+phone:vinny s|08026716795
 phone:zina cottage|919496822163
 way/1324432333
 way/754019042
